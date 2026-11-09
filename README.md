@@ -2,7 +2,7 @@
 
 Windows向けネイティブGUI。C# / WPFで実装し、Python・Node.js・WebView・ローカルWebサーバーを必要としません。
 
-現在は **v0.1.0リリース準備中** です。受け入れ条件と検証状況は [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) に記載します。
+**v0.1.0** の配布先は [GitHub Releases](https://github.com/itan2929/GrabForge/releases) です。受け入れ条件と検証状況は [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) に記載しています。
 
 ## 利用方法
 
@@ -28,6 +28,8 @@ Windows向けネイティブGUI。C# / WPFで実装し、Python・Node.js・WebV
 - GitHub Releasesの検知、ポータブル本体更新、データ保持とロールバック
 
 音声の加工には再エンコードが必要です。正規化は常に音量を上げる処理ではなく、指定したLUFSへそろえます。前後の測定値はジョブログに表示します。
+
+音声変換と音声加工を併用すると、メタデータやチャプター処理の順序により2回エンコードする場合があります。WAV/FLACではビットレート設定を使いません。字幕・画像・チャプターを保存できる範囲はコンテナにも依存します。
 
 ブラウザCookieの利用可否はブラウザ・OSの保護方式やログイン状態に依存します。サイト固有のアクセス制限や認証成功は保証しません。コンテンツの利用権限を確認してください。DRM回避機能はありません。
 

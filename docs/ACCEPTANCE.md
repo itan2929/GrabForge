@@ -45,4 +45,6 @@ The integration checks use self-generated media and a local HTTP fixture. The sh
 
 ## Publication gate
 
-Public repository/Windows CI/final release asset checks are pending. Do not publish v0.1.0 until CI passes and the final ZIP is audited.
+- Public MIT repository: https://github.com/itan2929/GrabForge
+- Full Windows CI (build, 26 unit tests, packaging, managed tool install, media and queue integration) passed: https://github.com/itan2929/GrabForge/actions/runs/42613721008
+- Latest source must also pass CI before its artifact is released. Final release assets/checksums are read back after publication.

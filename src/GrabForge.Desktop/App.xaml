@@ -19,6 +19,16 @@
       <Setter Property="Foreground" Value="#101723"/>
       <Setter Property="ItemTemplate"><Setter.Value><DataTemplate><TextBlock Text="{Binding}" Foreground="#101723"/></DataTemplate></Setter.Value></Setter>
     </Style>
+    <Style TargetType="ComboBoxItem">
+      <Setter Property="Foreground" Value="#101723"/><Setter Property="Padding" Value="8,5"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBoxItem">
+        <Border x:Name="OptionBorder" Background="#FFFFFF" Padding="{TemplateBinding Padding}"><ContentPresenter/></Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="OptionBorder" Property="Background" Value="#D6E4F7"/></Trigger>
+          <Trigger Property="IsSelected" Value="True"><Setter TargetName="OptionBorder" Property="Background" Value="#D6E4F7"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
     <Style TargetType="TabControl"><Setter Property="Background" Value="{StaticResource BackgroundBrush}"/><Setter Property="BorderBrush" Value="#364860"/><Setter Property="Padding" Value="10"/></Style>
     <Style TargetType="TabItem">
       <Setter Property="Padding" Value="16,9"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="#E5EDF8"/>
