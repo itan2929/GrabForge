@@ -14,7 +14,8 @@ public static class UpdateInstaller
         await using (var input = File.OpenRead(request.Archive))
             if (!Convert.ToHexString(await SHA256.HashDataAsync(input)).Equals(request.Sha256, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("更新ZIPのハッシュが一致しません。");
-        var root = Path.GetFullPath(request.Root);
+        var root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(request.Root));
+        var rootPrefix = Path.EndsInDirectorySeparator(root) ? root : root + Path.DirectorySeparatorChar;
         if (!Directory.Exists(root) || (File.GetAttributes(root) & FileAttributes.ReparsePoint) != 0) throw new IOException("更新先フォルダを確認できません。");
         var stage = Path.Combine(root, ".update-stage-" + Guid.NewGuid().ToString("N"));
         var backup = Path.Combine(root, ".update-backup-" + Guid.NewGuid().ToString("N"));
@@ -44,8 +45,11 @@ public static class UpdateInstaller
             foreach (var file in files)
             {
                 var target = Path.Combine(root, Path.GetRelativePath(stage, file));
-                for (var current = target; current != root; current = Path.GetDirectoryName(current)!)
+                for (string? current = target; !string.Equals(current, root, StringComparison.OrdinalIgnoreCase); current = Path.GetDirectoryName(current))
+                {
+                    if (current is null || !current.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase)) throw new IOException("更新先のパスを確認できません。");
                     if (Path.Exists(current) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) throw new IOException("更新先にリンクが含まれています。");
+                }
             }
             Directory.CreateDirectory(backup); var applied = new List<string>();
             try

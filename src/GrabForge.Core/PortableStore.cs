@@ -8,7 +8,7 @@ public sealed class PortableStore
     public string Data => Path.Combine(Root, "data");
     public string Tools => Path.Combine(Root, "tools");
     private readonly SemaphoreSlim writes = new(1);
-    public PortableStore(string root) { Root = Path.GetFullPath(root); Directory.CreateDirectory(Data); }
+    public PortableStore(string root) { Root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root)); Directory.CreateDirectory(Data); }
     public string Resolve(string path) => Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(Root, path));
     public T Load<T>(string name, Func<T> fallback)
     {

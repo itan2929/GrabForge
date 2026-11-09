@@ -2,6 +2,13 @@
 
 Product name: **GrabForge**. The old web application is a read-only specification reference, not a runtime dependency.
 
+## v0.2.1 updater correction
+
+- The actual v0.1.0 GUI update exposed a trailing-separator bug missed by the earlier CLI fixture: `AppContext.BaseDirectory` ends in a separator and parent-path traversal never reached an exact string match. The old helper was stopped in the isolated QA installation; user data was intact.
+- Portable roots and updater requests are now canonicalized. Parent traversal uses case-insensitive comparison and rejects an unreachable root instead of looping.
+- Added an update request with a trailing separator and a bounded regression check. Unit suite now has 28 tests.
+- Existing v0.1.0/v0.2.0 helpers cannot apply this repair through the affected path. The documented migration is a full ZIP overwrite, preserving `data/` and `tools/`; v0.2.0 is marked prerelease/superseded.
+
 ## v0.2.0 — Windows x64 (2026-11-10)
 
 - Generated logo embedded in the sidebar, WPF window icon and multi-resolution PE application icon (16–256 px).
@@ -12,7 +19,7 @@ Product name: **GrabForge**. The old web application is a read-only specificatio
 - 27 unit tests pass. Re-ran actual media, metadata, chapter, playlist and queue-control integration checks successfully with the renamed process markers.
 - Native smoke procedure: `tests/native-smoke.ps1`, using the generated local demo served by `tests/GrabForge.Integration ... serve artifacts/qa`. Checks settings tabs, preset save/apply, live preview, effect values, minimum-size control bounds and native download/postprocessing.
 - Native smoke passed: default size and 1040×640, all effect controls visible; local demo acquired and processed to MP3. An invalid numeric entry stayed blocked after changing settings tabs, then accepted the corrected value.
-- Final CI artifact, native v0.1.0 → v0.2.0 update and published asset digest must be verified before completion.
+- Verify the final CI artifact, data-preserving v0.1.0 ZIP migration, corrected helper restart and published asset digest before completion.
 
 ## v0.1.0 baseline (2026-11-09)
 

@@ -3,6 +3,7 @@
 1. Update the product version in `Directory.Build.props`, Windows manifest identity in `src/GrabForge.Desktop/app.manifest`, and the changelog. Runtime version detection, user agent, release manifest and ZIP names derive from the product version.
 2. Run `scripts/build.ps1 -Publish` on Windows with .NET 10 SDK. Run both integration commands in `ACCEPTANCE.md` using managed tools.
 3. Review the acceptance evidence, native controls at default/minimum sizes and portable update/rollback behavior. `tests/native-smoke.ps1` runs native checks through an installed Cua driver; pass its executable, target PID/window, socket and local demo URL. Keep the old web prototype unchanged.
+   Update QA must include an application base directory with its normal trailing separator, not only a CLI-supplied normalized folder. v0.1.0/v0.2.0 require manual ZIP overwrite because their already-installed helper is affected.
 4. Push source to GitHub and require the Windows workflow to pass. It builds/tests/publishes, installs isolated tools and runs actual media/queue checks.
 5. Download the workflow artifact. Audit the ZIP: root `GrabForge.exe`, updater, `release.json`, licenses; no `data/`, `tools/`, PDBs, development SDK or user information. Verify its SHA-256 sidecar.
 6. Publish a GitHub release tagged `vX.Y.Z` with `GrabForge-vX.Y.Z-win-x64.zip` and its `.sha256` file. Prefer the exact CI artifact; record the source commit in the release notes.

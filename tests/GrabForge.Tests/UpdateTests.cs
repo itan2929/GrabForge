@@ -31,6 +31,13 @@ public sealed class UpdateTests : IDisposable
         Assert.Equal("keep tools", File.ReadAllText(Path.Combine(store.Tools, "sentinel")));
         Assert.Contains("0.2.0", File.ReadAllText(Path.Combine(store.Data, "update-result.txt")));
     }
+    [Fact] public async Task UpdateAcceptsAppBaseDirectoryWithTrailingSeparator()
+    {
+        var request = Package();
+        await UpdateInstaller.ApplyAsync(request with { Root = request.Root + Path.DirectorySeparatorChar }).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal("new executable", File.ReadAllText(Path.Combine(request.Root, "GrabForge.exe")));
+        Assert.Equal(request.Root, new PortableStore(request.Root + Path.DirectorySeparatorChar).Root);
+    }
     [Theory] [InlineData("../outside.txt")] [InlineData("data/settings.json")] [InlineData("TOOLS/yt-dlp.exe")] [InlineData("nested/a:stream")] [InlineData("nested/../escape")]
     public async Task UnsafePackagesLeaveApplicationUnchanged(string path)
     {

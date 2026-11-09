@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-11-10
+
+- Fix updater path traversal validation looping indefinitely for application base directories ending in a separator.
+- Canonicalize the portable data root and reject paths that cannot reach the expected root.
+- Add a regression check with a real trailing-separator update request.
+- Document ZIP-overwrite migration from v0.1.0/v0.2.0; those installed helpers cannot repair themselves through the affected update path.
+
 ## 0.2.0 — 2026-11-10
 
 - Add a generated GrabForge logo and multi-resolution Windows icon.
