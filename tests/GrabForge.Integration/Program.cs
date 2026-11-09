@@ -27,7 +27,8 @@ if (args[0] == "update")
     await store.SaveAsync("settings.json", new AppSettings { CheckUpdatesAtStartup = false });
     await File.WriteAllTextAsync(Path.Combine(store.Data, "update-sentinel.txt"), "preserve data");
     await File.WriteAllTextAsync(Path.Combine(store.Tools, "update-sentinel.txt"), "preserve tools");
-    var request = new UpdateRequest(args.Length > 3 ? int.Parse(args[3]) : -1, store.Root, archive, Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(archive))), AppUpdates.CurrentVersion);
+    // Match the trailing separator returned by AppContext.BaseDirectory in a real GUI installation.
+    var request = new UpdateRequest(args.Length > 3 ? int.Parse(args[3]) : -1, store.Root + Path.DirectorySeparatorChar, archive, Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(archive))), AppUpdates.CurrentVersion);
     var requestPath = Path.Combine(store.Data, "qa-update.json"); await File.WriteAllTextAsync(requestPath, JsonSerializer.Serialize(request, Json.Options));
     var helper = new AppUpdates(store, http).LaunchUpdater(requestPath); Console.WriteLine("Updater started from " + helper); return 0;
 }
