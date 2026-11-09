@@ -78,13 +78,17 @@ public sealed class ToolManager(PortableStore store, HttpClient http)
             var version = release.GetProperty("tag_name").GetString() ?? "unknown";
             await File.WriteAllTextAsync(Path.Combine(content, "installation.json"), JsonSerializer.Serialize(new ToolInstallation(version, digest[7..], DateTimeOffset.UtcNow, url, executableVersion), Json.Options), ct);
             ct.ThrowIfCancellationRequested(); var current = Path.Combine(store.Tools, tool.Id); var backup = current + ".previous";
-            if (Directory.Exists(backup)) Directory.Delete(backup, true);
-            if (Directory.Exists(current)) Directory.Move(current, backup);
-            try { Directory.Move(content, current); }
-            catch { if (Directory.Exists(backup) && !Directory.Exists(current)) Directory.Move(backup, current); throw; }
+            if (Directory.Exists(backup)) await WindowsFileOperations.RetryAsync(() => Directory.Delete(backup, true), ct);
+            if (Directory.Exists(current)) await WindowsFileOperations.RetryAsync(() => Directory.Move(current, backup), ct);
+            try { await WindowsFileOperations.RetryAsync(() => Directory.Move(content, current), ct); }
+            catch { if (Directory.Exists(backup) && !Directory.Exists(current)) await WindowsFileOperations.RetryAsync(() => Directory.Move(backup, current)); throw; }
             progress($"{tool.Id}: {version} を準備しました。");
         }
-        finally { if (Directory.Exists(staging)) Directory.Delete(staging, true); mutation.Release(); }
+        finally
+        {
+            try { if (Directory.Exists(staging)) await WindowsFileOperations.RetryAsync(() => Directory.Delete(staging, true)); }
+            finally { mutation.Release(); }
+        }
     }
     public static async Task DownloadVerifiedAsync(HttpClient http, Uri source, string destination, string expectedSha256, Action<string>? progress, CancellationToken ct)
     {

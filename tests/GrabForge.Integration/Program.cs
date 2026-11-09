@@ -24,7 +24,8 @@ if (args[0] == "analyze")
 if (args[0] == "update")
 {
     var archive = Path.GetFullPath(args[2]);
-    await store.SaveAsync("settings.json", new AppSettings { CheckUpdatesAtStartup = false });
+    var settings = store.Load("settings.json", () => new AppSettings()); settings.CheckUpdatesAtStartup = false;
+    await store.SaveAsync("settings.json", settings);
     await File.WriteAllTextAsync(Path.Combine(store.Data, "update-sentinel.txt"), "preserve data");
     await File.WriteAllTextAsync(Path.Combine(store.Tools, "update-sentinel.txt"), "preserve tools");
     // Match the trailing separator returned by AppContext.BaseDirectory in a real GUI installation.

@@ -6,7 +6,7 @@ Product name: **GrabForge**. The old web application is a read-only specificatio
 
 - The actual v0.1.0 GUI update exposed a trailing-separator bug missed by the earlier CLI fixture: `AppContext.BaseDirectory` ends in a separator and parent-path traversal never reached an exact string match. The old helper was stopped in the isolated QA installation; user data was intact.
 - Portable roots and updater requests are now canonicalized. Parent traversal uses case-insensitive comparison and rejects an unreachable root instead of looping.
-- Added an update request with a trailing separator and a bounded regression check. Unit suite now has 28 tests.
+- Added an update request with a trailing separator and a bounded regression check. A Windows CI tool-installation lock also exposed the need for bounded file-operation retries, covered with real lock/release and cancellation tests. Unit suite now has 30 tests.
 - Existing v0.1.0/v0.2.0 helpers cannot apply this repair through the affected path. The documented migration is a full ZIP overwrite, preserving `data/` and `tools/`; v0.2.0 is marked prerelease/superseded.
 
 ## v0.2.0 — Windows x64 (2026-11-10)
