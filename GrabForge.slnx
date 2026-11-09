@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GrabForge.Core/GrabForge.Core.csproj" />
+    <Project Path="src/GrabForge.Desktop/GrabForge.Desktop.csproj" />
+    <Project Path="src/GrabForge.Updater/GrabForge.Updater.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GrabForge.Integration/GrabForge.Integration.csproj" />
+    <Project Path="tests/GrabForge.Tests/GrabForge.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,28 @@
+name: Build and package Windows
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build, test and publish portable ZIP
+        shell: pwsh
+        run: ./scripts/build.ps1 -Publish
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GrabForge-win-x64
+          path: |
+            artifacts/*.zip
+            artifacts/*.sha256
+      - name: Install managed tools in isolated QA directory
+        shell: pwsh
+        run: dotnet run --project tests/GrabForge.Integration/GrabForge.Integration.csproj -- install artifacts/ci-qa
+      - name: Verify real media processing and queue controls
+        shell: pwsh
+        run: dotnet run --project tests/GrabForge.Integration/GrabForge.Integration.csproj -- verify artifacts/ci-qa

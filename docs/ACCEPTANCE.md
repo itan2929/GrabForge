@@ -1,0 +1,48 @@
+# v0.1.0 acceptance gates
+
+Product name: **GrabForge**. The old web application is a read-only specification reference, not a runtime dependency.
+
+## Verified on Windows x64 (2026-11-09)
+
+| Requirement | Evidence |
+|---|---|
+| Native UI, no browser/server/Python/npm requirements | Self-contained ZIP extracted outside source tree; `GrabForge.exe` opened a WPF window |
+| Media/playlist analysis | Managed yt-dlp analyzed local WAV, three-item HTML5 playlist and real SoundCloud media with fractional duration (160.466 seconds); native analysis also succeeded |
+| Separate video/audio choices and three modes | Argument tests, native mode controls; actual video-only processing removed audio from a combined source |
+| Containers and audio conversion | MP3/M4A/Opus/FLAC/WAV produced and probed; requested sampling rates retained; invariant-culture encoding/filter arguments tested |
+| Compressor + two-pass normalization | Quiet fixture −41.75 LUFS → approximately −14 LUFS in all five audio formats; copied video packet hash unchanged |
+| Simple/advanced audio controls | Native conversion toggle, compressor/normalization tabs, ratio edit to 3.5 and normalization preset reflected as −14 in detail fields |
+| Filename preview | Actual yt-dlp template evaluation, final MP3 extension in CLI and native UI; playlist index evaluated to `02` |
+| Subtitles, chapters, artwork, metadata | Local video/audio jobs retained cover art, two chapters and video subtitles, saved SRT/JPEG/info.json sidecars; full file and both chapter files measured near −20 LUFS |
+| Opus artwork | Picture metadata survived conversion and normalization; ffprobe confirmed attached artwork |
+| Advanced yt-dlp controls | Tests cover browser cookies, proxy, limits, retries, fragment concurrency, archive, SponsorBlock, remux and extra arguments |
+| Multiple URLs and playlist range | Three actual downloads under concurrency=2; HTML5 playlist range selected only item 2 |
+| Queue controls and history | Live process pause/resume, cancellation while paused, successful retry, immediate cancellation, final-state persistence and clearing tested |
+| Complete presets | All option fields round-tripped; schema rejection and independent clones tested; native save/apply/export/import/delete verified with file readback |
+| Managed tools | Native “prepare all” installed yt-dlp 2026.10.26, BtbN FFmpeg and Deno v2.9.8; upstream SHA-256 and executable probes checked before switching |
+| Update discovery and verification | Fake HTTPS GitHub feed selected GrabForge ZIP and validated downloaded SHA-256; missing/unverifiable assets rejected |
+| Actual portable update | Detached published helper waited for old PID, replaced installed binaries, wrote success record and restarted native GrabForge under a new PID; installed DLL hash matched package |
+| Preservation and rollback | Data/tools sentinel files and presets survived actual update; locked destination test restored prior application files; unsafe paths, data/tools entries, wrong version and corrupted hash rejected |
+| Build and packaging | Desktop/updater build without warnings; 26 unit tests pass; ZIP/checksum generated from fresh staging, local data/tools and PDB files excluded; .NET distribution notices included |
+
+Reproduce automated media/queue checks:
+
+```powershell
+dotnet run --project tests/GrabForge.Integration -- install artifacts/qa
+dotnet run --project tests/GrabForge.Integration -- verify artifacts/qa
+```
+
+The integration checks use self-generated media and a local HTTP fixture. The shipped application does not run a web server. Real-site analysis was read-only; no third-party media download was needed for QA.
+
+## External limitations
+
+- Codec/container compatibility, available site formats, subtitles and chapters depend on the source. Selecting an incompatible combination reports the upstream error.
+- Browser cookie access, login requirements and SponsorBlock results depend on the browser/site/service. Argument handling is tested; external authentication and category matches are not universally guaranteed.
+- WAV does not offer the same artwork/chapter features as MP3/M4A. Audio bitrate settings are disabled for lossless WAV/FLAC. AAC bitrate targets and VBR rates depend on the encoder and source.
+- Conversion before yt-dlp metadata/chapter processing and subsequent audio effects can encode lossy audio twice. Keep the original when an archival source is needed.
+- Pause/resume applies to the active external process tree. A transition between processes may briefly have no pausable process.
+- v0.1.0 is an unsigned Windows x64 build. Executables/tools must be in a writable directory; settings/tools are retained locally.
+
+## Publication gate
+
+Public repository/Windows CI/final release asset checks are pending. Do not publish v0.1.0 until CI passes and the final ZIP is audited.
