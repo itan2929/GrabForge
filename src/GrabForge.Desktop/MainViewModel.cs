@@ -47,7 +47,7 @@ public sealed class MainViewModel : Observable, IAsyncDisposable
         // Preserve selector expressions from compatibility presets; concrete IDs belong to the analyzed item.
         if (!Options.VideoFormatId.Contains('[')) Options.VideoFormatId = video?.Id ?? "bestvideo*";
         if (!Options.AudioFormatId.Contains('[')) Options.AudioFormatId = audio?.Id ?? "bestaudio";
-        Report($"{Media.Title} — 形式 {Media.Formats.Count}件 / 字幕 {Media.Subtitles.Count}言語 / 自動字幕 {Media.AutoSubtitles.Count}言語 / チャプター {Media.Chapters.Count}件");
+        Report($"解析完了 · {Media.Formats.Count}形式");
     }
     public async Task<string> PreviewAsync(CancellationToken ct)
     {

@@ -111,14 +111,14 @@ public sealed class DownloadQueue : IAsyncDisposable
         {
             lock (gate)
             {
-                if (text.StartsWith("CF_PROGRESS|"))
+                if (text.StartsWith("GF_PROGRESS|"))
                 {
                     var pieces = text.Split('|');
                     if (pieces.Length >= 4) { if (double.TryParse(pieces[1].Trim().TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture, out var value)) job.Progress = Math.Clamp(value, 0, 100); job.Speed = pieces[2]; job.Eta = pieces[3]; }
                 }
-                else if (text.StartsWith("CF_TITLE|")) job.Title = text[9..];
-                else if (text.StartsWith("CF_FILE|")) { var path = text[8..].Trim(); if (!files.Contains(path)) files.Add(path); job.OutputPath = path; }
-                else if (text.StartsWith("CF_CHAPTERS|"))
+                else if (text.StartsWith("GF_TITLE|")) job.Title = text[9..];
+                else if (text.StartsWith("GF_FILE|")) { var path = text[8..].Trim(); if (!files.Contains(path)) files.Add(path); job.OutputPath = path; }
+                else if (text.StartsWith("GF_CHAPTERS|"))
                 {
                     var payload = text[12..].Trim();
                     if (payload.StartsWith('['))

@@ -1,8 +1,20 @@
-# v0.1.0 acceptance gates
+# GrabForge acceptance gates
 
 Product name: **GrabForge**. The old web application is a read-only specification reference, not a runtime dependency.
 
-## Verified on Windows x64 (2026-11-09)
+## v0.2.0 — Windows x64 (2026-11-10)
+
+- Generated logo embedded in the sidebar, WPF window icon and multi-resolution PE application icon (16–256 px).
+- Bounded workspace with side navigation, side-by-side format panels and output/effects/metadata/advanced tabs. Pages have no outer vertical ScrollViewer; media lists and logs retain their own scrolling.
+- Compressor and normalization remain independent, with separate simple/advanced controls and complete preset round-trips.
+- Removed retired product names from current source, internal process markers and generated build caches. Old generated packages/QA output are isolated outside the project; recursive archive deletion was denied by the execution policy even after user authorization.
+- README includes the generated logo, real native screenshot, quick start, portable updates, capabilities, development and license links.
+- 27 unit tests pass. Re-ran actual media, metadata, chapter, playlist and queue-control integration checks successfully with the renamed process markers.
+- Native smoke procedure: `tests/native-smoke.ps1`, using the generated local demo served by `tests/GrabForge.Integration ... serve artifacts/qa`. Checks settings tabs, preset save/apply, live preview, effect values, minimum-size control bounds and native download/postprocessing.
+- Native smoke passed: default size and 1040×640, all effect controls visible; local demo acquired and processed to MP3. An invalid numeric entry stayed blocked after changing settings tabs, then accepted the corrected value.
+- Final CI artifact, native v0.1.0 → v0.2.0 update and published asset digest must be verified before completion.
+
+## v0.1.0 baseline (2026-11-09)
 
 | Requirement | Evidence |
 |---|---|
@@ -41,10 +53,10 @@ The integration checks use self-generated media and a local HTTP fixture. The sh
 - WAV does not offer the same artwork/chapter features as MP3/M4A. Audio bitrate settings are disabled for lossless WAV/FLAC. AAC bitrate targets and VBR rates depend on the encoder and source.
 - Conversion before yt-dlp metadata/chapter processing and subsequent audio effects can encode lossy audio twice. Keep the original when an archival source is needed.
 - Pause/resume applies to the active external process tree. A transition between processes may briefly have no pausable process.
-- v0.1.0 is an unsigned Windows x64 build. Executables/tools must be in a writable directory; settings/tools are retained locally.
+- Releases are unsigned Windows x64 builds. Executables/tools must be in a writable directory; settings/tools are retained locally.
 
 ## Publication gate
 
 - Public MIT repository: https://github.com/itan2929/GrabForge
 - Full Windows CI (build, 26 unit tests, packaging, managed tool install, media and queue integration) passed: https://github.com/itan2929/GrabForge/actions/runs/42613721008
-- Latest source must also pass CI before its artifact is released. Final release assets/checksums are read back after publication.
+- Each release candidate must pass CI before its artifact is released. Release assets/checksums are read back after publication.

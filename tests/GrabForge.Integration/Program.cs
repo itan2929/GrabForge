@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using GrabForge.Core;
 
-if (args.Length < 2 || args[0] is not ("install" or "verify" or "analyze" or "update")) { Console.Error.WriteLine("Usage: install|verify|analyze|update <isolated-qa-root> [URL or package]"); return 2; }
+if (args.Length < 2 || args[0] is not ("install" or "verify" or "analyze" or "update" or "serve")) { Console.Error.WriteLine("Usage: install|verify|analyze|update|serve <isolated-qa-root> [URL or package]"); return 2; }
 var root = Path.GetFullPath(args[1]); var store = new PortableStore(root);
 using var http = ToolManager.CreateHttpClient(); var manager = new ToolManager(store, http); var process = new ToolProcess();
 if (args[0] == "install")
@@ -14,6 +14,7 @@ if (args[0] == "install")
     Console.WriteLine("PASS: managed tools downloaded, SHA-256 verified and version probes succeeded."); return 0;
 }
 manager.Paths.Ensure("yt-dlp", "ffmpeg", "ffprobe", "deno");
+if (args[0] == "serve") { await DemoServer.RunAsync(store, manager); return 0; }
 if (args[0] == "analyze")
 {
     var media = await new MediaService(manager.Paths, process, store).AnalyzeAsync(args[2], new());

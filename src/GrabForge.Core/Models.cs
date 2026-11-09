@@ -106,10 +106,13 @@ public sealed class MediaFormat
     [JsonPropertyName("filesize")] public long? Size { get; set; }
     [JsonPropertyName("filesize_approx")] public long? ApproximateSize { get; set; }
     [JsonPropertyName("language")] public string? Language { get; set; }
-    [JsonIgnore] public bool HasVideo => VideoCodec is not null and not "none";
-    [JsonIgnore] public bool HasAudio => AudioCodec is not null and not "none";
-    [JsonIgnore] public string Quality => Height is > 0 ? $"{Height}p" : $"{AudioBitrate ?? TotalBitrate ?? 0:0} kbps";
+    private bool AudioExtension => Extension is "mp3" or "m4a" or "aac" or "opus" or "ogg" or "flac" or "wav";
+    private bool UnknownContainer => VideoCodec is null && AudioCodec is null && Extension is "mp4" or "webm" or "mkv" or "mov";
+    [JsonIgnore] public bool HasVideo => VideoCodec is not null and not "none" || UnknownContainer;
+    [JsonIgnore] public bool HasAudio => AudioCodec is not null and not "none" || AudioCodec is null && (AudioExtension || UnknownContainer);
+    [JsonIgnore] public string Quality => Height is > 0 ? $"{Height}p" : (AudioBitrate ?? TotalBitrate) is double rate ? $"{rate:0} kbps" : "—";
     [JsonIgnore] public string SizeDisplay => (Size ?? ApproximateSize) is long n ? $"{n / 1048576d:0.0} MB" : "不明";
+    public override string ToString() => string.Join(" · ", new[] { Id, Quality, Extension, VideoCodec, AudioCodec }.Where(value => value is not null and not "none" && value.Length > 0));
 }
 
 public sealed class MediaInfo

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — 2026-11-10
+
+- Add a generated GrabForge logo and multi-resolution Windows icon.
+- Replace the long download form with a bounded two-column workspace and tabbed settings.
+- Place compressor and normalization side by side, preserving both simple and advanced controls.
+- Reduce visible guidance to labels, actions and short state messages.
+- Refresh the README with branding, native screenshots, quick start and development instructions.
+- Remove retired names from source/protocols and isolate obsolete local build artifacts outside the project.
+- Keep unknown-codec media formats selectable and retain validation on inactive settings tabs.
+
 ## 0.1.0 — 2026-11-09
 
 - New Windows-native C# / WPF application, independent of the earlier web prototype.

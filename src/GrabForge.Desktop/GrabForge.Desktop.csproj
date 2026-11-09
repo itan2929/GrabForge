@@ -5,6 +5,11 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>GrabForge</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>../../assets/grabforge.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup><ProjectReference Include="../GrabForge.Core/GrabForge.Core.csproj" /></ItemGroup>
+  <ItemGroup>
+    <Resource Include="../../assets/grabforge.png" Link="Assets/grabforge.png" />
+    <Resource Include="../../assets/grabforge.ico" Link="Assets/grabforge.ico" />
+  </ItemGroup>
 </Project>

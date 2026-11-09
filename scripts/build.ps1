@@ -21,6 +21,10 @@ try {
         & $dotnet publish src/GrabForge.Updater/GrabForge.Updater.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -p:DebugSymbols=false -o (Join-Path $stage 'updater') --nologo
         if ($LASTEXITCODE -ne 0) { throw 'Updater publish failed.' }
         foreach ($name in @('README.md','LICENSE','THIRD-PARTY-NOTICES.md','CHANGELOG.md')) { Copy-Item -LiteralPath (Join-Path $projectRoot $name) -Destination $stage }
+        New-Item -ItemType Directory -Path (Join-Path $stage 'assets'),(Join-Path $stage 'docs/images') -Force | Out-Null
+        Copy-Item -LiteralPath (Join-Path $projectRoot 'assets/grabforge.png') -Destination (Join-Path $stage 'assets')
+        foreach ($name in @('ACCEPTANCE.md','RELEASING.md')) { Copy-Item -LiteralPath (Join-Path $projectRoot "docs/$name") -Destination (Join-Path $stage 'docs') }
+        Copy-Item -LiteralPath (Join-Path $projectRoot 'docs/images/app.png') -Destination (Join-Path $stage 'docs/images')
         $licenseFolder = Join-Path $stage 'licenses'
         New-Item -ItemType Directory -Path $licenseFolder -Force | Out-Null
         foreach ($name in @('LICENSE.txt', 'ThirdPartyNotices.txt')) {
@@ -38,6 +42,7 @@ try {
             foreach ($entry in $audit.Entries) {
                 $top = $entry.FullName.Replace('\', '/').Split('/')[0]
                 if ($top -in @('data', 'tools') -or $top.StartsWith('.')) { throw 'Release ZIP includes local data or tools.' }
+                if ($entry.FullName -match '\.pdb$') { throw 'Release ZIP includes development symbols.' }
             }
             if (-not ($audit.Entries | Where-Object { $_.FullName -eq 'GrabForge.exe' })) { throw 'Release ZIP is missing GrabForge.exe at root.' }
         } finally { $audit.Dispose() }

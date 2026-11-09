@@ -16,6 +16,12 @@ public sealed class CoreTests : IDisposable
         var original = new DownloadOptions(); original.Validate(); var copy = original.Clone(); copy.TargetLufs = -20;
         Assert.Equal(-16, original.TargetLufs); Assert.Equal(-20, copy.TargetLufs);
     }
+    [Fact] public void UnknownCodecFormatsRemainSelectableWithoutInventingQuality()
+    {
+        var audio = new MediaFormat { Extension = "wav" }; Assert.True(audio.HasAudio); Assert.False(audio.HasVideo); Assert.Equal("—", audio.Quality);
+        var container = new MediaFormat { Extension = "mp4" }; Assert.True(container.HasVideo); Assert.True(container.HasAudio);
+        var videoOnly = new MediaFormat { Extension = "mp4", VideoCodec = "h264", AudioCodec = "none" }; Assert.True(videoOnly.HasVideo); Assert.False(videoOnly.HasAudio);
+    }
     [Theory]
     [InlineData(double.NaN, 2)] [InlineData(-61, 2)] [InlineData(-12, 21)]
     public void InvalidCompressorSettingsFail(double threshold, double ratio)
@@ -93,7 +99,7 @@ public sealed class CoreTests : IDisposable
     }
     [Fact] public async Task ReleaseCheckRejectsUnverifiableArtifacts()
     {
-        var json = "{\"tag_name\":\"v0.2.0\",\"body\":\"notes\",\"html_url\":\"https://github.com/itan2929/GrabForge\",\"assets\":[{\"name\":\"GrabForge-v0.2.0-win-x64.zip\",\"browser_download_url\":\"https://example.com/asset\",\"digest\":null}]}";
+        var json = "{\"tag_name\":\"v9.9.9\",\"body\":\"notes\",\"html_url\":\"https://github.com/itan2929/GrabForge\",\"assets\":[{\"name\":\"GrabForge-v9.9.9-win-x64.zip\",\"browser_download_url\":\"https://example.com/asset\",\"digest\":null}]}";
         using var http = new HttpClient(new FakeHandler(_ => new(HttpStatusCode.OK) { Content = new StringContent(json) }));
         await Assert.ThrowsAsync<IOException>(() => new AppUpdates(new(root), http).CheckAsync("itan2929/GrabForge"));
     }

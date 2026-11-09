@@ -61,7 +61,7 @@ public sealed class UpdateTests : IDisposable
     [Fact] public async Task UpdateFeedFindsCorrectProductAndVerifiedAsset()
     {
         var bytes = "package fixture"u8.ToArray(); var hash = Convert.ToHexString(SHA256.HashData(bytes));
-        var payload = JsonSerializer.Serialize(new { tag_name = "v0.2.0", body = "notes", html_url = "https://github.com/example/app/releases/tag/v0.2.0", assets = new[] { new { name = "GrabForge-v0.2.0-win-x64.zip", browser_download_url = "https://example.com/package", digest = "sha256:" + hash } } });
+        var payload = JsonSerializer.Serialize(new { tag_name = "v9.9.9", body = "notes", html_url = "https://github.com/example/app/releases/tag/v9.9.9", assets = new[] { new { name = "GrabForge-v9.9.9-win-x64.zip", browser_download_url = "https://example.com/package", digest = "sha256:" + hash } } });
         using var http = new HttpClient(new FakeHandler(r => new(System.Net.HttpStatusCode.OK) { Content = r.RequestUri!.Host == "api.github.com" ? new StringContent(payload) : new ByteArrayContent(bytes) }));
         var updates = new AppUpdates(new(root), http); var release = await updates.CheckAsync("example/app"); Assert.NotNull(release);
         var requestPath = await updates.PrepareAsync(release, _ => { });

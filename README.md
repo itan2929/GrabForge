@@ -1,62 +1,98 @@
-# GrabForge — yt-dlp / FFmpeg GUI
+<p align="center">
+  <img src="assets/grabforge.png" width="96" height="96" alt="GrabForge logo">
+</p>
 
-Windows向けネイティブGUI。C# / WPFで実装し、Python・Node.js・WebView・ローカルWebサーバーを必要としません。
+<h1 align="center">GrabForge</h1>
 
-**v0.1.0** の配布先は [GitHub Releases](https://github.com/itan2929/GrabForge/releases) です。受け入れ条件と検証状況は [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) に記載しています。
+<p align="center">yt-dlp と FFmpeg を、ひとつの Windows アプリに。</p>
 
-## 利用方法
+<p align="center">
+  <a href="https://github.com/itan2929/GrabForge/actions/workflows/build.yml"><img src="https://github.com/itan2929/GrabForge/actions/workflows/build.yml/badge.svg" alt="Windows CI"></a>
+  <a href="https://github.com/itan2929/GrabForge/releases/latest"><img src="https://img.shields.io/github/v/release/itan2929/GrabForge?color=8066e8" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/platform-Windows%20x64-64748b" alt="Windows x64">
+</p>
 
-1. Windows x64向けポータブルZIPを、書き込み可能なフォルダへ全体展開します。
-2. `GrabForge.exe`を実行します。.NET実行環境は配布物に同梱します。
-3. 「ツール・更新」で「必要なツールをまとめて準備 / 更新」を押します（初回はネット接続が必要）。
-4. URLを貼り付けて解析し、動画＋音声・音声のみ・動画のみを選びます。
-5. 映像と音声を個別に選択し、出力・音声処理・字幕などを設定してキューへ追加します。
+<p align="center">
+  <a href="https://github.com/itan2929/GrabForge/releases/latest"><strong>ダウンロード</strong></a> ·
+  <a href="#はじめる">はじめる</a> ·
+  <a href="#できること">機能</a> ·
+  <a href="https://github.com/itan2929/GrabForge/issues">Issues</a>
+</p>
 
-## 機能
+<p align="center"><img src="docs/images/app.png" alt="GrabForge — 映像・音声の形式選択と音声処理" width="1160"></p>
 
-- 動画/プレイリスト解析、全形式一覧、映像・音声IDの個別選択
-- MP4/MKV/WebM、MP3/M4A/Opus/FLAC/WAV、周波数・VBR/CBR・ビットレート
-- コンプ/2パス正規化の個別切り替え、かんたんプリセットと詳細設定
-- ファイル名テンプレートとyt-dlp本体による保存名プレビュー
-- 字幕・自動字幕・形式変換・埋め込み、チャプター埋め込み/分割
-- メタデータ・サムネイル・info.json、SponsorBlock
-- ブラウザCookie、プロキシ、速度制限、再試行、並列フラグメント、アーカイブ
-- 複数URL、プレイリスト範囲、同時ダウンロード、キュー・履歴・進捗
-- 一時停止/再開、キャンセル、再試行、ファイルの場所を開く
-- 全設定を含む名前付きプリセット、複製・上書き・削除、JSON入出力
-- yt-dlp/FFmpeg/ffprobe/Denoの専用管理、SHA-256照合、修復・更新
-- GitHub Releasesの検知、ポータブル本体更新、データ保持とロールバック
+ブラウザを開かずに、メディアの取得から音声の仕上げまで。C# / WPF によるネイティブ UI と、展開して使えるポータブル構成です。
 
-音声の加工には再エンコードが必要です。正規化は常に音量を上げる処理ではなく、指定したLUFSへそろえます。前後の測定値はジョブログに表示します。
+## はじめる
 
-音声変換と音声加工を併用すると、メタデータやチャプター処理の順序により2回エンコードする場合があります。WAV/FLACではビットレート設定を使いません。字幕・画像・チャプターを保存できる範囲はコンテナにも依存します。
+1. [Releases](https://github.com/itan2929/GrabForge/releases/latest) から **`GrabForge-vX.Y.Z-win-x64.zip`** をダウンロードし、書き込み可能なフォルダへ**全体を展開**します。
+2. **`GrabForge.exe`** を起動し、「ツール・更新」→「まとめて準備 / 更新」を実行します。
+3. URL を入力して「解析」。映像・音声と出力設定を選び、キューに追加します。
 
-ブラウザCookieの利用可否はブラウザ・OSの保護方式やログイン状態に依存します。サイト固有のアクセス制限や認証成功は保証しません。コンテンツの利用権限を確認してください。DRM回避機能はありません。
+Windows x64 向けです。.NET 実行環境は同梱済み。Python・Node.js・ブラウザのインストールは不要です。初回のツール取得にはインターネット接続が必要です。
 
-## ポータブルデータ
+## できること
 
-アプリフォルダの `data/` に設定・履歴・プリセット、`tools/` に外部ツールを保存します。PCのPATHや既存ツールは変更しません。相対保存先はアプリフォルダ基準です。
+| | |
+|---|---|
+| **メディア取得** | 映像・音声を個別に選択。動画＋音声／音声のみ／動画のみ、複数 URL、プレイリスト範囲指定 |
+| **出力** | MP4・MKV・WebM、MP3・M4A・Opus・FLAC・WAV。周波数、CBR/VBR、ビットレートと保存名プレビュー |
+| **音声処理** | コンプレッサーと2パスのラウドネス正規化。「かんたん／詳細」で調整し、処理前後の音量をログで確認 |
+| **付加情報** | 字幕・自動字幕・チャプター・サムネイル・メタデータ、SponsorBlock |
+| **キューとプリセット** | 同時実行、一時停止・再開・キャンセル・再試行、履歴。全設定の保存と JSON 入出力 |
+| **ツール・更新** | yt-dlp・FFmpeg・ffprobe・Deno の取得と更新、SHA-256 照合、本体のリリース検知とポータブル更新 |
 
-プリセットはネットワーク等の設定も含みます。他の人に渡す前に内容を確認してください。アプリ更新ZIPには `data/`・`tools/` を含めず、更新時に保持します。
+プロキシ、ブラウザ Cookie、速度制限、再試行、並列フラグメント、ダウンロードアーカイブ、追加の yt-dlp 引数も設定できます。
+
+## ポータブル運用・アップデート
+
+設定・プリセット・履歴はアプリ横の **`data/`**、外部ツールは **`tools/`** に保存します。PC の PATH や既存のツールは変更しません。フォルダごと移動すれば設定も持ち運べます。保存先を絶対パスで指定した場合は、移動先に合わせて変更してください。
+
+「ツール・更新」で本体の更新を確認できます。更新時は `data/` と `tools/` を保持し、旧本体をバックアップします。v0.1.0 からもアプリ内更新を利用できます。
+
+<details>
+<summary>形式・音声処理・認証について</summary>
+
+- 利用できる形式や認証条件はサイトに依存します。コーデックと保存コンテナの互換性も確認してください。
+- 正規化は指定した LUFS にそろえる処理です。必ず音が大きくなるとは限りません。
+- 音声変換と加工の併用では、メタデータ・チャプター処理の順序により2回エンコードする場合があります。元音源を残す場合は「元ファイルも保持」を使用してください。
+- WAV・FLAC はビットレート設定の対象外です。字幕・画像・チャプターの対応範囲はコンテナに依存します。
+- プリセットには接続設定も含まれます。共有前に内容を確認してください。
+- 本体のコード署名はありません。コンテンツの利用権限を確認してください。DRM を回避する機能はありません。
+
+</details>
 
 ## 開発
 
-.NET 10 SDKとWindows x64を使用します。Visual Studioの操作は不要です。
+Windows と **.NET 10 SDK** を使用します。
 
 ```powershell
-./scripts/build.ps1
-./scripts/build.ps1 -Publish
+dotnet run --project src/GrabForge.Desktop
+./scripts/build.ps1          # build + unit tests
+./scripts/build.ps1 -Publish # self-contained ZIP + SHA-256
 ```
 
-開発用SDKを `.tools/dotnet/` に置いた場合はスクリプトが優先します。配布物は `artifacts/` に生成します。SDKやテストデータは配布しません。
+実メディア・キューの検証:
 
-構成:
+```powershell
+dotnet run --project tests/GrabForge.Integration -- install artifacts/qa
+dotnet run --project tests/GrabForge.Integration -- verify artifacts/qa
+```
 
-- `src/GrabForge.Core` — 設定、プリセット、キュー、ツール実行、メディア・音声処理、更新
-- `src/GrabForge.Desktop` — WPFの画面とプレゼンテーション
-- `src/GrabForge.Updater` — 本体終了後の更新適用・復旧
-- `tests/` — 引数、永続化、音声処理、配布・更新の検証
+```text
+src/
+  GrabForge.Core/      メディア・音声処理・キュー・永続化・更新
+  GrabForge.Desktop/   WPF UI
+  GrabForge.Updater/   本体終了後の更新適用・復元
+tests/                単体テストと実変換の検証
+assets/               ロゴ・マルチサイズ ICO
+```
 
-## ライセンス
+不具合報告・改善案・PR を歓迎します。挙動を変更する場合は関連するテストを実行し、UI は実画面で確認してください。検証内容は [ACCEPTANCE.md](docs/ACCEPTANCE.md)、公開手順は [RELEASING.md](docs/RELEASING.md) を参照してください。
 
-本体はMIT。外部ツールは同梱せず、初回セットアップで各配布元から取得します。外部ツールには個別のライセンスが適用されます。[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) を参照してください。
+## ライセンス・謝辞
+
+GrabForge は [MIT License](LICENSE) で公開しています。
+
+[yt-dlp](https://github.com/yt-dlp/yt-dlp)、[FFmpeg](https://ffmpeg.org/)、[BtbN builds](https://github.com/BtbN/FFmpeg-Builds)、[Deno](https://deno.com/) を利用しています。外部ツールは配布 ZIP に含めず、各配布元から取得します。それぞれのライセンスは [Third-party notices](THIRD-PARTY-NOTICES.md) を参照してください。

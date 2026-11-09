@@ -11,34 +11,41 @@ internal sealed record OptionField(string Property, string Label, string? Choice
 
 internal static class OptionEditor
 {
-    public static FrameworkElement Build(DownloadOptions options, IEnumerable<OptionField> fields, Action? changed = null)
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<DownloadOptions, Dictionary<string, FrameworkElement>> editors = new();
+    public static void Reset(DownloadOptions options) => editors.Remove(options);
+    public static bool HasErrors(DownloadOptions options) => editors.TryGetValue(options, out var fields) && fields.Values.Any(Validation.GetHasError);
+    public static FrameworkElement Build(DownloadOptions options, IEnumerable<OptionField> fields, Action? changed = null, int columns = 1)
     {
-        var grid = new Grid(); grid.ColumnDefinitions.Add(new() { Width = new GridLength(210) }); grid.ColumnDefinitions.Add(new());
-        int row = 0;
+        var grid = new Grid();
+        for (var i = 0; i < columns; i++) grid.ColumnDefinitions.Add(new());
+        int index = 0;
         foreach (var field in fields)
         {
             var property = typeof(DownloadOptions).GetProperty(field.Property)!;
-            grid.RowDefinitions.Add(new() { Height = GridLength.Auto });
-            var label = new TextBlock { Text = field.Label, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 8) };
-            Grid.SetRow(label, row); grid.Children.Add(label);
+            if (index % columns == 0) grid.RowDefinitions.Add(new() { Height = GridLength.Auto });
+            var cell = new StackPanel { Margin = new Thickness(0, 0, index % columns < columns - 1 ? 10 : 0, 6) };
             FrameworkElement editor;
             var binding = new Binding(property.Name) { Source = options, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged, ValidatesOnExceptions = true, NotifyOnValidationError = true };
             if (property.PropertyType == typeof(bool))
             {
-                var check = new CheckBox { Content = "有効" }; check.SetBinding(CheckBox.IsCheckedProperty, binding);
+                var check = new CheckBox { Content = field.Label, VerticalAlignment = VerticalAlignment.Center, MinHeight = 28 }; check.SetBinding(CheckBox.IsCheckedProperty, binding);
                 check.Checked += (_, _) => changed?.Invoke(); check.Unchecked += (_, _) => changed?.Invoke(); editor = check;
             }
             else if (field.Choices is not null)
             {
-                var combo = new ComboBox { ItemsSource = field.Choices.Split('|'), HorizontalAlignment = HorizontalAlignment.Left };
+                var combo = new ComboBox { ItemsSource = field.Choices.Split('|'), HorizontalAlignment = HorizontalAlignment.Stretch, MinWidth = 0 };
                 combo.SetBinding(ComboBox.SelectedItemProperty, binding); combo.SelectionChanged += (_, _) => changed?.Invoke(); editor = combo;
             }
             else
             {
                 var text = new TextBox(); text.SetBinding(TextBox.TextProperty, binding);
-                text.LostKeyboardFocus += (_, _) => changed?.Invoke(); editor = text;
+                text.TextChanged += (_, _) => changed?.Invoke(); editor = text;
             }
+            editor.Margin = new Thickness(0, 2, 0, 0);
+            if (property.PropertyType != typeof(bool)) cell.Children.Add(new TextBlock { Text = field.Label, FontSize = 11, Foreground = System.Windows.Media.Brushes.LightSteelBlue, TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
+            cell.Children.Add(editor);
             AutomationProperties.SetAutomationId(editor, property.Name); AutomationProperties.SetName(editor, field.Label);
+            editors.GetOrCreateValue(options)[property.Name] = editor;
             if (property.Name is nameof(DownloadOptions.BitrateMode) or nameof(DownloadOptions.BitrateKbps))
             {
                 void UpdateAvailability() => editor.IsEnabled = options.AudioFormat is not ("flac" or "wav");
@@ -46,7 +53,7 @@ internal static class OptionEditor
                 grid.AddHandler(System.Windows.Controls.Primitives.Selector.SelectionChangedEvent, new SelectionChangedEventHandler((_, _) => UpdateAvailability()));
             }
             if (field.Hint is not null) editor.ToolTip = field.Hint;
-            Grid.SetColumn(editor, 1); Grid.SetRow(editor, row++); grid.Children.Add(editor);
+            Grid.SetColumn(cell, index % columns); Grid.SetRow(cell, index++ / columns); grid.Children.Add(cell);
         }
         return grid;
     }
@@ -56,13 +63,13 @@ internal static class OptionEditor
         new(nameof(DownloadOptions.VideoContainer), "動画コンテナ", "mp4|mkv|webm"),
         new(nameof(DownloadOptions.ConvertAudio), "取得した音声を変換する"),
         new(nameof(DownloadOptions.AudioFormat), "音声保存形式", "mp3|m4a|opus|flac|wav"),
-        new(nameof(DownloadOptions.SampleRate), "サンプリング周波数（Hz）", "source|8000|12000|16000|24000|32000|44100|48000|88200|96000|192000"),
+        new(nameof(DownloadOptions.SampleRate), "サンプリング周波数 · Hz", "source|8000|12000|16000|24000|32000|44100|48000|88200|96000|192000"),
         new(nameof(DownloadOptions.BitrateMode), "ビットレートモード", "vbr|cbr"), new(nameof(DownloadOptions.BitrateKbps), "ビットレート（kbps）")
     ];
     public static readonly OptionField[] Compressor = [
         new(nameof(DownloadOptions.ThresholdDb), "しきい値（dB）", Hint: "−60～0。これを超えた音を圧縮"),
         new(nameof(DownloadOptions.Ratio), "比率（:1）", Hint: "1～20"), new(nameof(DownloadOptions.AttackMs), "アタック（ms）", Hint: "0.01～2000"),
-        new(nameof(DownloadOptions.ReleaseMs), "リリース（ms）", Hint: "0.01～9000"), new(nameof(DownloadOptions.MakeupDb), "メイクアップゲイン（dB）", Hint: "0～36"), new(nameof(DownloadOptions.KneeDb), "ニー（dB）", Hint: "0～18")
+        new(nameof(DownloadOptions.ReleaseMs), "リリース（ms）", Hint: "0.01～9000"), new(nameof(DownloadOptions.MakeupDb), "ゲイン（dB）", Hint: "メイクアップゲイン。0～36"), new(nameof(DownloadOptions.KneeDb), "ニー（dB）", Hint: "0～18")
     ];
     public static readonly OptionField[] Normalize = [
         new(nameof(DownloadOptions.TargetLufs), "目標ラウドネス（LUFS）", Hint: "−70～−5。0に近いほど大きい"),

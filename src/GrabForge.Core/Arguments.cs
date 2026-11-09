@@ -26,8 +26,8 @@ public static class Arguments
     public static List<string> Download(ToolPaths tools, PortableStore store, DownloadOptions o, string url)
     {
         o.Validate(); var a = Common(tools, o);
-        a.AddRange(["--no-simulate", "--newline", "--progress", "--no-color", "--progress-template", "download:CF_PROGRESS|%(progress._percent_str)s|%(progress._speed_str)s|%(progress._eta_str)s",
-            "--print", "before_dl:CF_TITLE|%(title)s", "--print", "after_move:CF_FILE|%(filepath)s", "--print", "after_move:CF_CHAPTERS|%(chapters)j", "--paths", store.Resolve(o.OutputDirectory), "--output", o.OutputTemplate,
+        a.AddRange(["--no-simulate", "--newline", "--progress", "--no-color", "--progress-template", "download:GF_PROGRESS|%(progress._percent_str)s|%(progress._speed_str)s|%(progress._eta_str)s",
+            "--print", "before_dl:GF_TITLE|%(title)s", "--print", "after_move:GF_FILE|%(filepath)s", "--print", "after_move:GF_CHAPTERS|%(chapters)j", "--paths", store.Resolve(o.OutputDirectory), "--output", o.OutputTemplate,
             "--retries", o.Retries.ToString(), "--fragment-retries", o.FragmentRetries.ToString(), "--concurrent-fragments", o.ConcurrentFragments.ToString()]);
         var format = o.Mode switch { DownloadMode.Audio => o.AudioFormatId, DownloadMode.Video => o.VideoFormatId,
             _ => $"{o.VideoFormatId}+{o.AudioFormatId}/{o.VideoFormatId}/best" };
