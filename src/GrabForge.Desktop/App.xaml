@@ -3,6 +3,10 @@
     <SolidColorBrush x:Key="BackgroundBrush" Color="#101723"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="#192334"/>
     <SolidColorBrush x:Key="TextBrush" Color="#E5EDF8"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#51469B"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#344965"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#FFFFFF"/>
     <Style TargetType="Window"><Setter Property="Background" Value="{StaticResource BackgroundBrush}"/><Setter Property="Foreground" Value="{StaticResource TextBrush}"/><Setter Property="FontFamily" Value="Yu Gothic UI, Segoe UI"/><Setter Property="FontSize" Value="13"/></Style>
     <Style TargetType="TextBlock"><Setter Property="Foreground" Value="{StaticResource TextBrush}"/><Setter Property="TextWrapping" Value="Wrap"/></Style>
     <Style TargetType="TextBox"><Setter Property="Padding" Value="8,6"/><Setter Property="Margin" Value="0,4,0,8"/><Setter Property="Background" Value="#0F1826"/><Setter Property="Foreground" Value="{StaticResource TextBrush}"/><Setter Property="BorderBrush" Value="#3B4C66"/><Setter Property="CaretBrush" Value="White"/><Setter Property="VerticalContentAlignment" Value="Center"/></Style>
@@ -10,7 +14,11 @@
     <Style TargetType="CheckBox"><Setter Property="Foreground" Value="{StaticResource TextBrush}"/><Setter Property="Margin" Value="0,8,8,8"/></Style>
     <Style TargetType="GroupBox"><Setter Property="Foreground" Value="{StaticResource TextBrush}"/><Setter Property="Margin" Value="0,6,0,10"/><Setter Property="Padding" Value="12"/><Setter Property="BorderBrush" Value="#364860"/></Style>
     <Style TargetType="Expander"><Setter Property="Foreground" Value="{StaticResource TextBrush}"/><Setter Property="Margin" Value="0,4,0,8"/><Setter Property="Padding" Value="8"/></Style>
-    <Style TargetType="ComboBox"><Setter Property="Margin" Value="0,4,0,8"/><Setter Property="Padding" Value="7,5"/><Setter Property="MinWidth" Value="110"/></Style>
+    <Style TargetType="ComboBox">
+      <Setter Property="Margin" Value="0,4,0,8"/><Setter Property="Padding" Value="7,5"/><Setter Property="MinWidth" Value="110"/>
+      <Setter Property="Foreground" Value="#101723"/>
+      <Setter Property="ItemTemplate"><Setter.Value><DataTemplate><TextBlock Text="{Binding}" Foreground="#101723"/></DataTemplate></Setter.Value></Setter>
+    </Style>
     <Style TargetType="TabControl"><Setter Property="Background" Value="{StaticResource BackgroundBrush}"/><Setter Property="BorderBrush" Value="#364860"/><Setter Property="Padding" Value="10"/></Style>
     <Style TargetType="TabItem">
       <Setter Property="Padding" Value="16,9"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="#E5EDF8"/>
