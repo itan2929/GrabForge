@@ -2,6 +2,12 @@
 
 Product name: **GrabForge**. The old web application is a read-only specification reference, not a runtime dependency.
 
+## v0.2.2 optional metadata correction
+
+- Reproduced the reported failure with `https://www.youtube.com/watch?v=-0ff3wyGicg`: yt-dlp returned 43 formats and `chapters: null`; the native format-summary renderer threw `NullReferenceException` before populating either list.
+- Normalize explicit null collections in the media model, including subtitles and automatic captions. Regression cases cover null, empty and omitted metadata, with independent video/audio selection retained. All 34 unit tests pass.
+- Retried the exact URL through the published native candidate: title, video formats, audio formats and the final `.mp4` filename preview appeared without a dialog. Read-only analysis; no third-party media download was required.
+
 ## v0.2.1 updater correction
 
 - The actual v0.1.0 GUI update exposed a trailing-separator bug missed by the earlier CLI fixture: `AppContext.BaseDirectory` ends in a separator and parent-path traversal never reached an exact string match. The old helper was stopped in the isolated QA installation; user data was intact.

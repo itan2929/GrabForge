@@ -9,6 +9,23 @@ namespace GrabForge.Tests;
 
 public sealed class CoreTests : IDisposable
 {
+    [Theory]
+    [InlineData("\"chapters\":null,\"subtitles\":null,\"automatic_captions\":null")]
+    [InlineData("\"chapters\":[],\"subtitles\":{},\"automatic_captions\":{}")]
+    [InlineData("\"duration\":609")]
+    public void MissingOptionalMetadataLeavesStreamsSelectable(string metadata)
+    {
+        var media = JsonSerializer.Deserialize<MediaInfo>("{" + metadata + """
+            ,"formats":[{"format_id":"137","ext":"mp4","vcodec":"avc1","acodec":"none"},
+                        {"format_id":"140","ext":"m4a","vcodec":"none","acodec":"mp4a"}]}
+            """)!;
+        Assert.Empty(media.Chapters); Assert.Empty(media.Subtitles); Assert.Empty(media.AutoSubtitles);
+        Assert.Single(media.Formats.Where(f => f.HasVideo)); Assert.Single(media.Formats.Where(f => f.HasAudio));
+    }
+    [Fact] public void ExplicitNullFormatsBecomesAnEmptyList()
+    {
+        Assert.Empty(JsonSerializer.Deserialize<MediaInfo>("{\"formats\":null}")!.Formats);
+    }
     private readonly string root = Path.Combine(Path.GetTempPath(), "GrabForge-tests-" + Guid.NewGuid().ToString("N"));
     private ToolPaths Paths => new(Path.Combine(root, "yt-dlp.exe"), Path.Combine(root, "ffmpeg.exe"), Path.Combine(root, "ffprobe.exe"), Path.Combine(root, "deno.exe"));
     [Fact] public void DefaultsAndCloneAreIndependent()

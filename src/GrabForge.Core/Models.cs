@@ -117,16 +117,20 @@ public sealed class MediaFormat
 
 public sealed class MediaInfo
 {
+    private List<MediaFormat> formats = [];
+    private Dictionary<string, JsonElement> subtitles = [], autoSubtitles = [];
+    private List<JsonElement> chapters = [];
     [JsonPropertyName("id")] public string Id { get; set; } = "";
     [JsonPropertyName("title")] public string Title { get; set; } = "";
     [JsonPropertyName("uploader")] public string? Uploader { get; set; }
     [JsonPropertyName("duration")] public double? Duration { get; set; }
     [JsonPropertyName("webpage_url")] public string? Url { get; set; }
     [JsonPropertyName("thumbnail")] public string? Thumbnail { get; set; }
-    [JsonPropertyName("formats")] public List<MediaFormat> Formats { get; set; } = [];
-    [JsonPropertyName("subtitles")] public Dictionary<string, JsonElement> Subtitles { get; set; } = [];
-    [JsonPropertyName("automatic_captions")] public Dictionary<string, JsonElement> AutoSubtitles { get; set; } = [];
-    [JsonPropertyName("chapters")] public List<JsonElement> Chapters { get; set; } = [];
+    // Extractors may emit explicit nulls as well as omit unavailable metadata.
+    [JsonPropertyName("formats")] public List<MediaFormat> Formats { get => formats; set => formats = value ?? []; }
+    [JsonPropertyName("subtitles")] public Dictionary<string, JsonElement> Subtitles { get => subtitles; set => subtitles = value ?? []; }
+    [JsonPropertyName("automatic_captions")] public Dictionary<string, JsonElement> AutoSubtitles { get => autoSubtitles; set => autoSubtitles = value ?? []; }
+    [JsonPropertyName("chapters")] public List<JsonElement> Chapters { get => chapters; set => chapters = value ?? []; }
     [JsonPropertyName("playlist_count")] public int? PlaylistCount { get; set; }
     [JsonIgnore] public string RawJson { get; set; } = "";
 }

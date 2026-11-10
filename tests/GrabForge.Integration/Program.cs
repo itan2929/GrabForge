@@ -19,6 +19,7 @@ if (args[0] == "analyze")
 {
     var media = await new MediaService(manager.Paths, process, store).AnalyzeAsync(args[2], new());
     if (media.Formats.Count == 0) throw new Exception("No formats");
+    Console.WriteLine($"Optional metadata: {media.Chapters.Count} chapters, {media.Subtitles.Count} subtitles, {media.AutoSubtitles.Count} automatic captions");
     Console.WriteLine($"PASS: supported-site analysis: {media.Title}, {media.Duration}s, {media.Formats.Count} formats"); return 0;
 }
 if (args[0] == "update")

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 — 2026-11-10
+
+- Fix analysis failing in the format selection screen when yt-dlp returns null chapters, subtitles or automatic captions.
+- Treat missing optional collections as empty and cover both null and omitted metadata with regression tests.
+
 ## 0.2.1 — 2026-11-10
 
 - Fix updater path traversal validation looping indefinitely for application base directories ending in a separator.
