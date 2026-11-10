@@ -2,6 +2,11 @@
 
 Product name: **GrabForge**. The old web application is a read-only specification reference, not a runtime dependency.
 
+## v0.3.1 layout refinements
+
+- The actual YouTube format list exposed unnecessary horizontal scrolling. Container names and file sizes now remain readable at the normal size; the format tables also fit the 1040 × 640 window, with codec details ellipsized when necessary.
+- Replaced the overlapping tab header layout with a horizontal items host that preserves the gap between buttons. This fixes clipped right corners on mode, settings and nested effect tabs while retaining focus navigation.
+
 ## v0.3.0 native interface
 
 - Reviewed the actual v0.2.2 screen and applied the agreed graphite direction across download, queue/history, presets and tools/update pages. The rationale and attribution are in `DESIGN.md`.

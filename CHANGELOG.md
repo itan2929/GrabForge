@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 — 2026-11-10
+
+- Fix clipped right corners on mode and settings tabs by using a header layout that respects tab margins.
+- Fit format-table columns to the available panel width, including scrollbar space, and keep short container names readable.
+- Avoid unnecessary horizontal scrolling in the video/audio format tables.
+
 ## 0.3.0 — 2026-11-10
 
 - Redesign the native interface with graphite surfaces, restrained selection accents, consistent spacing and a dark Windows title bar.

@@ -140,9 +140,10 @@ public partial class MainWindow
     private ListView FormatList(bool video)
     {
         var list = new ListView { SelectionMode = SelectionMode.Single, Margin = new Thickness(0), BorderThickness = new Thickness(0) };
+        ScrollViewer.SetHorizontalScrollBarVisibility(list, ScrollBarVisibility.Disabled);
         AutomationProperties.SetAutomationId(list, video ? "VideoFormats" : "AudioFormats");
         var view = new GridView();
-        var columns = new List<(string, string, double)> { ("ID", "Id", 48), ("品質", "Quality", 76), ("形式", "Extension", 48) };
+        var columns = new List<(string, string, double)> { ("ID", "Id", 48), ("品質", "Quality", 76), ("形式", "Extension", 52) };
         if (video) columns.Add(("FPS", "Fps", 36));
         columns.Add(("コーデック", video ? "VideoCodec" : "AudioCodec", 100));
         if (!video) columns.Add(("言語", "Language", 40));
@@ -160,7 +161,8 @@ public partial class MainWindow
         }
         list.View = view;
         var codecColumn = view.Columns.First(c => (string)c.Header == "コーデック");
-        list.SizeChanged += (_, _) => codecColumn.Width = Math.Max(48, list.ActualWidth - view.Columns.Where(c => c != codecColumn).Sum(c => c.Width) - 16);
+        // Leave room for the scrollbar and GridView's cell/container margins at the minimum window size.
+        list.SizeChanged += (_, _) => codecColumn.Width = Math.Max(32, list.ActualWidth - view.Columns.Where(c => c != codecColumn).Sum(c => c.Width) - 32);
         list.SelectionChanged += (_, _) =>
         {
             if (list.SelectedItem is not MediaFormat format) return;
