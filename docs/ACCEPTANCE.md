@@ -2,6 +2,15 @@
 
 Product name: **GrabForge**. The old web application is a read-only specification reference, not a runtime dependency.
 
+## v0.3.0 native interface
+
+- Reviewed the actual v0.2.2 screen and applied the agreed graphite direction across download, queue/history, presets and tools/update pages. The rationale and attribution are in `DESIGN.md`.
+- Native smoke checks passed: local media analysis, live final-extension preview, independent effect parameters, simple/detail synchronization, preset save/apply, and download plus audio processing.
+- The 1040 × 640 window retained both effect detail forms, including ratio, target LUFS and both reset buttons. Pages have no outer vertical scroll area.
+- All 34 unit tests passed after the presentation changes. Custom controls retain their WPF automation identities and native input bindings.
+- The final native dropdown changed the video container and the filename preview followed it. Format cells remain on one line; the final minimum-size check again found both effect detail forms and reset controls in bounds.
+- Palette contrast on the panel surface is 14.51:1 for primary text, 7.46:1 for secondary text and 5.39:1 for metadata. The main button reaches 13.90:1.
+
 ## v0.2.2 optional metadata correction
 
 - Reproduced the reported failure with `https://www.youtube.com/watch?v=-0ff3wyGicg`: yt-dlp returned 43 formats and `chapters: null`; the native format-summary renderer threw `NullReferenceException` before populating either list.

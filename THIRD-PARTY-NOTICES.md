@@ -7,6 +7,10 @@ GrabForge's own source is MIT licensed. This does not relicense external compone
 - .NET / WPF: https://github.com/dotnet/runtime and https://github.com/dotnet/wpf — MIT; the package's `licenses/` directory retains the chosen .NET distribution's license and third-party notices.
 - xUnit / Microsoft.NET.Test.Sdk: development/test dependencies, not included in the application package. See each NuGet package's license.
 
+## Design workflow
+
+Design workflow: [unslop](https://github.com/heydamir/unslop) by Damir Sokolovsky ([@heydamir](https://x.com/heydamir)), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Its guidance informed the native WPF redesign; the skill and its reference images are not bundled with the application.
+
 ## Tools acquired at the user's request
 
 Tools are stored separately in `tools/` and are not included in the application ZIP.

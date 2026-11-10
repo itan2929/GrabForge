@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 — 2026-11-10
+
+- Redesign the native interface with graphite surfaces, restrained selection accents, consistent spacing and a dark Windows title bar.
+- Unify inputs, dropdown menus, checkboxes, tabs, table headers and scrollbars, including visible keyboard focus and disabled states.
+- Add source-detail hierarchy, format counts, aligned numerical columns and concise empty states while retaining the bounded window layout.
+- Preserve download modes, all effect settings, presets and portable tool/update behavior.
+
 ## 0.2.2 — 2026-11-10
 
 - Fix analysis failing in the format selection screen when yt-dlp returns null chapters, subtitles or automatic captions.

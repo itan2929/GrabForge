@@ -12,7 +12,8 @@ namespace GrabForge.Desktop;
 public partial class MainWindow
 {
     private TextBox urls = null!;
-    private TextBlock summary = null!, preview = null!;
+    private TextBlock summary = null!, mediaDetails = null!, preview = null!, videoCount = null!, audioCount = null!;
+    private TextBlock videoEmpty = null!, audioEmpty = null!;
     private Image thumbnail = null!;
     private DockPanel mediaSummary = null!;
     private ListView videos = null!, audios = null!;
@@ -29,7 +30,7 @@ public partial class MainWindow
             DownloadPage.RowDefinitions.Add(new() { Height = height });
 
         urls = new TextBox { AcceptsReturn = true, Height = 48, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            ToolTip = "URL · 複数は改行", Margin = new Thickness(0, 0, 10, 8) };
+            ToolTip = "URL · 複数は改行", Tag = "URLを貼り付け · 複数は改行", Margin = new Thickness(0, 0, 12, 12) };
         AutomationProperties.SetAutomationId(urls, "Urls"); AutomationProperties.SetName(urls, "URL");
         var urlBar = new DockPanel();
         var analyze = AsyncButton("解析", async ct =>
@@ -47,13 +48,15 @@ public partial class MainWindow
         DockPanel.SetDock(actions, Dock.Right); urlBar.Children.Add(actions); urlBar.Children.Add(urls);
         DownloadPage.Children.Add(urlBar);
 
-        thumbnail = new Image { Width = 64, Height = 42, Margin = new Thickness(0, 0, 10, 0), Visibility = Visibility.Collapsed };
-        summary = Text("", 13); summary.TextWrapping = TextWrapping.NoWrap; summary.TextTrimming = TextTrimming.CharacterEllipsis;
-        mediaSummary = new DockPanel { Margin = new Thickness(0, 2, 0, 8), Visibility = Visibility.Collapsed };
-        DockPanel.SetDock(thumbnail, Dock.Left); mediaSummary.Children.Add(thumbnail); mediaSummary.Children.Add(summary);
+        thumbnail = new Image { Width = 80, Height = 48, Margin = new Thickness(0, 0, 12, 0), Stretch = Stretch.UniformToFill, Visibility = Visibility.Collapsed };
+        summary = Text("", 15); summary.TextWrapping = TextWrapping.NoWrap; summary.TextTrimming = TextTrimming.CharacterEllipsis; summary.Margin = new Thickness(0, 0, 0, 4);
+        mediaDetails = Text("", 12); mediaDetails.Foreground = Palette("SecondaryBrush"); mediaDetails.Margin = new Thickness(0); mediaDetails.TextWrapping = TextWrapping.NoWrap; mediaDetails.TextTrimming = TextTrimming.CharacterEllipsis;
+        var description = new StackPanel { VerticalAlignment = VerticalAlignment.Center }; description.Children.Add(summary); description.Children.Add(mediaDetails);
+        mediaSummary = new DockPanel { Margin = new Thickness(0, 0, 0, 16), Visibility = Visibility.Collapsed };
+        DockPanel.SetDock(thumbnail, Dock.Left); mediaSummary.Children.Add(thumbnail); mediaSummary.Children.Add(description);
         Grid.SetRow(mediaSummary, 1); DownloadPage.Children.Add(mediaSummary);
 
-        var modes = new TabControl { Style = (Style)FindResource("HeaderTabs"), SelectedIndex = (int)vm.Options.Mode, Margin = new Thickness(0, 0, 0, 10) };
+        var modes = new TabControl { Style = (Style)FindResource("HeaderTabs"), SelectedIndex = (int)vm.Options.Mode, Margin = new Thickness(0, 0, 0, 12) };
         AutomationProperties.SetAutomationId(modes, "DownloadMode");
         foreach (var (label, id) in new[] { ("動画 ＋ 音声", "ModeVideoAudio"), ("音声のみ", "ModeAudio"), ("動画のみ", "ModeVideo") })
             modes.Items.Add(Tab(label, new Grid(), id));
@@ -65,8 +68,17 @@ public partial class MainWindow
         Grid.SetRow(modes, 2); DownloadPage.Children.Add(modes);
 
         videos = FormatList(true); audios = FormatList(false);
-        videoPanel = Card("映像", videos); audioPanel = Card("音声", audios);
-        videoPanel.Margin = new Thickness(0, 0, 0, 10);
+        videoCount = Text("", 12); audioCount = Text("", 12);
+        videoCount.Foreground = audioCount.Foreground = Palette("MutedBrush");
+        Grid FormatBody(ListView list, out TextBlock empty)
+        {
+            var body = new Grid(); body.Children.Add(list);
+            empty = Text("解析すると形式を表示します", 13); empty.Foreground = Palette("MutedBrush");
+            empty.HorizontalAlignment = HorizontalAlignment.Center; empty.VerticalAlignment = VerticalAlignment.Center; empty.IsHitTestVisible = false;
+            body.Children.Add(empty); return body;
+        }
+        videoPanel = Card("映像", FormatBody(videos, out videoEmpty), videoCount); audioPanel = Card("音声", FormatBody(audios, out audioEmpty), audioCount);
+        videoPanel.Margin = new Thickness(0, 0, 0, 12);
         formatPanels = new Grid(); formatPanels.RowDefinitions.Add(new()); formatPanels.RowDefinitions.Add(new());
         formatPanels.Children.Add(videoPanel); Grid.SetRow(audioPanel, 1); formatPanels.Children.Add(audioPanel);
 
@@ -84,7 +96,7 @@ public partial class MainWindow
         advanced.Items.Add(Tab("取得", OptionEditor.Build(vm.Options, OptionEditor.Advanced.Take(6), columns: 2), "AcquisitionTab"));
         advanced.Items.Add(Tab("その他", OptionEditor.Build(vm.Options, OptionEditor.Advanced.Skip(6), columns: 2), "OtherTab"));
         settings.Items.Add(Tab("詳細", advanced, "AdvancedTab"));
-        var body = Columns(formatPanels, settings, 1, 1.06); Grid.SetRow(body, 3); DownloadPage.Children.Add(body);
+        var body = Columns(formatPanels, settings, 1, 1.12); Grid.SetRow(body, 3); DownloadPage.Children.Add(body);
         RefreshFormats(); UpdateModeVisibility();
     }
 
@@ -97,12 +109,12 @@ public partial class MainWindow
             var picker = new OpenFolderDialog();
             if (picker.ShowDialog(this) == true) { vm.Options.OutputDirectory = picker.FolderName; RebuildDownload(); }
         }, "ChooseOutput");
-        browse.VerticalAlignment = VerticalAlignment.Bottom; browse.Margin = new Thickness(8, 0, 0, 6);
+        browse.VerticalAlignment = VerticalAlignment.Bottom; browse.Margin = new Thickness(8, 0, 0, 4);
         DockPanel.SetDock(browse, Dock.Right); folder.Children.Add(browse);
         folder.Children.Add(OptionEditor.Build(vm.Options, OptionEditor.Output.Take(1)));
         panel.Children.Add(folder);
         panel.Children.Add(OptionEditor.Build(vm.Options, OptionEditor.Output.Skip(1).Take(1), () => _ = RefreshPreviewAsync()));
-        preview = Text("—", 11); preview.Foreground = Brushes.LightSteelBlue;
+        preview = Text("—", 12); preview.Foreground = Palette("MutedBrush"); preview.Margin = new Thickness(0, 4, 0, 16);
         preview.TextWrapping = TextWrapping.NoWrap; preview.TextTrimming = TextTrimming.CharacterEllipsis;
         AutomationProperties.SetAutomationId(preview, "FilenamePreview"); panel.Children.Add(preview);
         videoOutput = OptionEditor.Build(vm.Options, OptionEditor.Output.Skip(2).Take(1), () => _ = RefreshPreviewAsync(), columns: 2);
@@ -130,16 +142,25 @@ public partial class MainWindow
         var list = new ListView { SelectionMode = SelectionMode.Single, Margin = new Thickness(0), BorderThickness = new Thickness(0) };
         AutomationProperties.SetAutomationId(list, video ? "VideoFormats" : "AudioFormats");
         var view = new GridView();
-        var columns = new List<(string, string, double)> { ("ID", "Id", 54), ("品質", "Quality", 70), ("形式", "Extension", 50) };
-        if (video) columns.Add(("FPS", "Fps", 30));
-        columns.Add(("コーデック", video ? "VideoCodec" : "AudioCodec", 110));
-        if (!video) columns.Add(("言語", "Language", 36));
-        columns.Add(("サイズ", "SizeDisplay", 60));
+        var columns = new List<(string, string, double)> { ("ID", "Id", 48), ("品質", "Quality", 76), ("形式", "Extension", 48) };
+        if (video) columns.Add(("FPS", "Fps", 36));
+        columns.Add(("コーデック", video ? "VideoCodec" : "AudioCodec", 100));
+        if (!video) columns.Add(("言語", "Language", 40));
+        columns.Add(("サイズ", "SizeDisplay", 76));
         foreach (var (label, property, width) in columns)
-            view.Columns.Add(new() { Header = label, DisplayMemberBinding = new Binding(property), Width = width });
+        {
+            var cell = new FrameworkElementFactory(typeof(TextBlock)); cell.SetBinding(TextBlock.TextProperty, new Binding(property));
+            cell.SetValue(FrameworkElement.MarginProperty, new Thickness(2, 0, 2, 0));
+            cell.SetValue(TextBlock.TextWrappingProperty, TextWrapping.NoWrap);
+            cell.SetValue(TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis);
+            cell.SetValue(TextBlock.ForegroundProperty, Palette(property is "Quality" or "Extension" ? "TextBrush" : "SecondaryBrush"));
+            if (property is "Id" or "Fps" or "SizeDisplay") cell.SetValue(TextBlock.FontFamilyProperty, new FontFamily("Consolas"));
+            if (property is "Fps" or "SizeDisplay") cell.SetValue(TextBlock.TextAlignmentProperty, TextAlignment.Right);
+            view.Columns.Add(new() { Header = label, CellTemplate = new DataTemplate { VisualTree = cell }, Width = width });
+        }
         list.View = view;
         var codecColumn = view.Columns.First(c => (string)c.Header == "コーデック");
-        list.SizeChanged += (_, _) => codecColumn.Width = Math.Max(60, list.ActualWidth - view.Columns.Where(c => c != codecColumn).Sum(c => c.Width) - 24);
+        list.SizeChanged += (_, _) => codecColumn.Width = Math.Max(48, list.ActualWidth - view.Columns.Where(c => c != codecColumn).Sum(c => c.Width) - 16);
         list.SelectionChanged += (_, _) =>
         {
             if (list.SelectedItem is not MediaFormat format) return;
@@ -158,7 +179,8 @@ public partial class MainWindow
         if (media.Duration is double duration) details.Add(TimeSpan.FromSeconds(Math.Round(duration)).ToString("g"));
         if (media.Subtitles.Count > 0) details.Add($"字幕 {media.Subtitles.Count}");
         if (media.Chapters.Count > 0) details.Add($"チャプター {media.Chapters.Count}");
-        summary.Text = media.Title + (details.Count == 0 ? "" : "\n" + string.Join(" · ", details));
+        summary.Text = media.Title;
+        mediaDetails.Text = string.Join(" · ", details);
         summary.ToolTip = summary.Text;
         if (Uri.TryCreate(media.Thumbnail, UriKind.Absolute, out var uri) && uri.Scheme is "https" or "http")
             try
@@ -169,6 +191,8 @@ public partial class MainWindow
             catch { thumbnail.Visibility = Visibility.Collapsed; }
         videos.ItemsSource = media.Formats.Where(f => f.HasVideo).Reverse().ToArray();
         audios.ItemsSource = media.Formats.Where(f => f.HasAudio).Reverse().ToArray();
+        videoCount.Text = $"{videos.Items.Count} 形式"; audioCount.Text = $"{audios.Items.Count} 形式";
+        videoEmpty.Text = videos.Items.Count == 0 ? "映像なし" : ""; audioEmpty.Text = audios.Items.Count == 0 ? "音声なし" : "";
         videos.SelectedItem = media.Formats.FirstOrDefault(f => f.Id == vm.Options.VideoFormatId);
         audios.SelectedItem = media.Formats.FirstOrDefault(f => f.Id == vm.Options.AudioFormatId);
     }
@@ -180,7 +204,7 @@ public partial class MainWindow
         audioPanel.Visibility = mode == DownloadMode.Video ? Visibility.Collapsed : Visibility.Visible;
         formatPanels.RowDefinitions[0].Height = mode == DownloadMode.Audio ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
         formatPanels.RowDefinitions[1].Height = mode == DownloadMode.Video ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
-        videoPanel.Margin = mode == DownloadMode.VideoAudio ? new Thickness(0, 0, 0, 10) : new Thickness(0);
+        videoPanel.Margin = mode == DownloadMode.VideoAudio ? new Thickness(0, 0, 0, 12) : new Thickness(0);
         videoOutput.Visibility = mode == DownloadMode.Audio ? Visibility.Collapsed : Visibility.Visible;
         audioOutput.Visibility = mode == DownloadMode.Audio ? Visibility.Visible : Visibility.Collapsed;
         if (mode == DownloadMode.Video && effectsTab.IsSelected) ((TabControl)effectsTab.Parent).SelectedIndex = 0;
@@ -211,7 +235,7 @@ public partial class MainWindow
         check.Unchecked += (_, _) => { if (compressor) vm.Options.Compressor = false; else vm.Options.Normalize = false; tabs.IsEnabled = false; };
         var simple = new StackPanel();
         var labels = compressor ? new[] { "弱め", "標準", "強め" } : new[] { "−20 LUFS", "−16 LUFS", "−14 LUFS" };
-        var selected = Text("", 11); selected.Foreground = Brushes.LightSteelBlue;
+        var selected = Text("", 12); selected.Foreground = Palette("SecondaryBrush");
         FrameworkElement Advanced()
         {
             var panel = new StackPanel();

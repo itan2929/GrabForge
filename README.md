@@ -97,4 +97,6 @@ assets/               ロゴ・マルチサイズ ICO
 
 GrabForge は [MIT License](LICENSE) で公開しています。
 
+UIの改善には、Damir Sokolovsky作 [unslop](https://github.com/heydamir/unslop)（[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)）の指針を使用しています。[デザイン方針](docs/DESIGN.md)も参照してください。
+
 [yt-dlp](https://github.com/yt-dlp/yt-dlp)、[FFmpeg](https://ffmpeg.org/)、[BtbN builds](https://github.com/BtbN/FFmpeg-Builds)、[Deno](https://deno.com/) を利用しています。外部ツールは配布 ZIP に含めず、各配布元から取得します。それぞれのライセンスは [Third-party notices](THIRD-PARTY-NOTICES.md) を参照してください。

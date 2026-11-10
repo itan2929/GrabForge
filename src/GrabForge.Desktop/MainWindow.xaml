@@ -3,42 +3,43 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="GrabForge" Icon="/Assets/grabforge.ico"
         Width="1280" Height="760" MinWidth="1040" MinHeight="640"
-        WindowStartupLocation="CenterScreen" Background="{StaticResource BackgroundBrush}" Foreground="{StaticResource TextBrush}" FontFamily="Yu Gothic UI, Segoe UI" FontSize="13">
+        WindowStartupLocation="CenterScreen" Background="{StaticResource BackgroundBrush}" Foreground="{StaticResource TextBrush}">
   <Grid>
-    <Grid.ColumnDefinitions><ColumnDefinition Width="168"/><ColumnDefinition/></Grid.ColumnDefinitions>
-    <Border Background="#0C1220" BorderBrush="#243148" BorderThickness="0,0,1,0">
-      <DockPanel Margin="12,20,12,14">
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="4,0,0,30">
-          <Image Source="/Assets/grabforge.png" Width="34" Height="34" Margin="0,0,9,0"/>
-          <TextBlock Text="GrabForge" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="184"/><ColumnDefinition/></Grid.ColumnDefinitions>
+    <Border Background="{StaticResource SidebarBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0">
+      <DockPanel Margin="16,24,16,16">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="4,0,0,32">
+          <Image Source="/Assets/grabforge.png" Width="24" Height="24" Margin="0,0,8,0"/>
+          <TextBlock Text="GrabForge" FontSize="17" FontWeight="Medium" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel DockPanel.Dock="Bottom" Margin="8,0,0,0">
-          <TextBlock x:Name="VersionLabel" FontSize="12" Foreground="#8D9DB7"/>
+          <TextBlock x:Name="VersionLabel" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
         </StackPanel>
         <ListBox x:Name="Navigation" BorderThickness="0" Background="Transparent" SelectionChanged="Navigate" AutomationProperties.AutomationId="Navigation">
           <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem">
-            <Setter Property="Padding" Value="12,11"/><Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="Padding" Value="12,8"/><Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource KeyboardFocus}"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem">
-              <Border x:Name="NavBorder" CornerRadius="7" Background="Transparent" Padding="{TemplateBinding Padding}"><ContentPresenter/></Border>
+              <Border x:Name="NavBorder" CornerRadius="6" Background="Transparent"><Grid><Border x:Name="NavMark" Width="2" Height="16" Background="{StaticResource AccentBrush}" HorizontalAlignment="Left" Visibility="Collapsed"/><ContentPresenter Margin="{TemplateBinding Padding}"/></Grid></Border>
               <ControlTemplate.Triggers>
-                <Trigger Property="IsSelected" Value="True"><Setter TargetName="NavBorder" Property="Background" Value="#302950"/></Trigger>
-                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="NavBorder" Property="BorderBrush" Value="#64539B"/><Setter TargetName="NavBorder" Property="BorderThickness" Value="1"/></Trigger>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="NavBorder" Property="Background" Value="{StaticResource SurfaceBrush}"/></Trigger>
+                <Trigger Property="IsSelected" Value="True"><Setter TargetName="NavBorder" Property="Background" Value="{StaticResource RaisedBrush}"/><Setter TargetName="NavMark" Property="Visibility" Value="Visible"/></Trigger>
               </ControlTemplate.Triggers>
             </ControlTemplate></Setter.Value></Setter>
           </Style></ListBox.ItemContainerStyle>
-          <ListBoxItem Content="ダウンロード"/>
-          <ListBoxItem Content="キュー・履歴"/>
-          <ListBoxItem Content="プリセット"/>
-          <ListBoxItem Content="ツール・更新"/>
+          <ListBoxItem AutomationProperties.Name="ダウンロード"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{StaticResource SecondaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/><TextBlock Text="ダウンロード"/></StackPanel></ListBoxItem>
+          <ListBoxItem AutomationProperties.Name="キュー・履歴"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8F1;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{StaticResource SecondaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/><TextBlock Text="キュー・履歴"/></StackPanel></ListBoxItem>
+          <ListBoxItem AutomationProperties.Name="プリセット"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{StaticResource SecondaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/><TextBlock Text="プリセット"/></StackPanel></ListBoxItem>
+          <ListBoxItem AutomationProperties.Name="ツール・更新"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{StaticResource SecondaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/><TextBlock Text="ツール・更新"/></StackPanel></ListBoxItem>
         </ListBox>
       </DockPanel>
     </Border>
-    <Grid Grid.Column="1" Margin="20,12,20,10">
-      <Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition/><RowDefinition Height="28"/></Grid.RowDefinitions>
+    <Grid Grid.Column="1" Margin="24,12,24,12">
+      <Grid.RowDefinitions><RowDefinition Height="52"/><RowDefinition/><RowDefinition Height="28"/></Grid.RowDefinitions>
       <DockPanel Margin="0,0,0,8">
         <Button DockPanel.Dock="Right" Content="保存先を開く" Click="OpenOutput" AutomationProperties.AutomationId="OpenOutput" Padding="10,5"/>
-        <TextBlock x:Name="PageTitle" Text="ダウンロード" FontSize="21" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        <TextBlock x:Name="PageTitle" Text="ダウンロード" FontSize="22" FontWeight="Medium" VerticalAlignment="Center"/>
       </DockPanel>
       <Grid Grid.Row="1" x:Name="PageHost" AutomationProperties.AutomationId="PageHost">
         <Grid x:Name="DownloadPage"/>
@@ -47,8 +48,8 @@
         <Grid x:Name="ToolsPage" Visibility="Collapsed"/>
       </Grid>
       <DockPanel Grid.Row="2" Margin="0,8,0,0">
-        <TextBlock x:Name="QueueSummary" DockPanel.Dock="Right" FontSize="11" Foreground="#8D9DB7" Margin="14,0,0,0"/>
-        <TextBlock x:Name="Status" Text="準備完了" FontSize="11" Foreground="#9AACCA" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" AutomationProperties.AutomationId="Status"/>
+        <TextBlock x:Name="QueueSummary" DockPanel.Dock="Right" FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="16,0,0,0"/>
+        <TextBlock x:Name="Status" Text="準備完了" FontSize="12" Foreground="{StaticResource SecondaryBrush}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" AutomationProperties.AutomationId="Status"/>
       </DockPanel>
     </Grid>
   </Grid>

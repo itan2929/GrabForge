@@ -1,10 +1,12 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using GrabForge.Core;
 
@@ -21,6 +23,11 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        SourceInitialized += (_, _) =>
+        {
+            var enabled = 1;
+            DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 20, ref enabled, sizeof(int));
+        };
         Title = "GrabForge · " + AppUpdates.CurrentVersion;
         VersionLabel.Text = "v" + AppUpdates.CurrentVersion;
         Width = Math.Min(Width, SystemParameters.WorkArea.Width - 20);
@@ -50,7 +57,7 @@ public partial class MainWindow : Window
         if (DownloadPage is null || ToolsPage is null || Navigation.SelectedIndex < 0) return;
         FrameworkElement[] pages = [DownloadPage, QueuePage, PresetsPage, ToolsPage];
         for (var i = 0; i < pages.Length; i++) pages[i].Visibility = Navigation.SelectedIndex == i ? Visibility.Visible : Visibility.Collapsed;
-        PageTitle.Text = ((ListBoxItem)Navigation.SelectedItem).Content.ToString();
+        PageTitle.Text = AutomationProperties.GetName((ListBoxItem)Navigation.SelectedItem);
     }
 
     private static Button Button(string label, Action action, string id)
@@ -69,20 +76,27 @@ public partial class MainWindow : Window
     private static WrapPanel Row(params UIElement[] children)
     { var panel = new WrapPanel(); foreach (var child in children) panel.Children.Add(child); return panel; }
 
-    private static Border Card(string title, UIElement content)
+    private static Brush Palette(string key) => (Brush)Application.Current.FindResource(key);
+
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmSetWindowAttribute(IntPtr window, int attribute, ref int value, int size);
+
+    private static Border Card(string title, UIElement content, TextBlock? count = null)
     {
         var panel = new DockPanel();
-        var heading = Text(title, 14); heading.FontWeight = FontWeights.SemiBold; heading.Margin = new Thickness(0, 0, 0, 10);
-        DockPanel.SetDock(heading, Dock.Top); panel.Children.Add(heading); panel.Children.Add(content);
-        return new Border { Child = panel, CornerRadius = new CornerRadius(9), Padding = new Thickness(14),
-            Background = new SolidColorBrush(Color.FromRgb(23, 33, 50)), BorderBrush = new SolidColorBrush(Color.FromRgb(42, 56, 78)), BorderThickness = new Thickness(1) };
+        var heading = Text(title, 13); heading.FontWeight = FontWeights.Medium; heading.Margin = new Thickness(0, 0, 0, 8);
+        var header = new DockPanel();
+        if (count is not null) { DockPanel.SetDock(count, Dock.Right); header.Children.Add(count); }
+        header.Children.Add(heading); DockPanel.SetDock(header, Dock.Top); panel.Children.Add(header); panel.Children.Add(content);
+        return new Border { Child = panel, CornerRadius = new CornerRadius(12), Padding = new Thickness(12),
+            Background = Palette("SurfaceBrush"), BorderBrush = Palette("LineBrush"), BorderThickness = new Thickness(1) };
     }
 
     private static Grid Columns(UIElement left, UIElement right, double leftWeight = 1, double rightWeight = 1)
     {
         var grid = new Grid();
         grid.ColumnDefinitions.Add(new() { Width = new GridLength(leftWeight, GridUnitType.Star) });
-        grid.ColumnDefinitions.Add(new() { Width = new GridLength(12) });
+        grid.ColumnDefinitions.Add(new() { Width = new GridLength(16) });
         grid.ColumnDefinitions.Add(new() { Width = new GridLength(rightWeight, GridUnitType.Star) });
         grid.Children.Add(left); Grid.SetColumn(right, 2); grid.Children.Add(right); return grid;
     }

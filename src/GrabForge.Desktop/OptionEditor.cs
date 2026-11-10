@@ -23,7 +23,7 @@ internal static class OptionEditor
         {
             var property = typeof(DownloadOptions).GetProperty(field.Property)!;
             if (index % columns == 0) grid.RowDefinitions.Add(new() { Height = GridLength.Auto });
-            var cell = new StackPanel { Margin = new Thickness(0, 0, index % columns < columns - 1 ? 10 : 0, 6) };
+            var cell = new StackPanel { Margin = new Thickness(0, 0, index % columns < columns - 1 ? 12 : 0, 4) };
             FrameworkElement editor;
             var binding = new Binding(property.Name) { Source = options, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged, ValidatesOnExceptions = true, NotifyOnValidationError = true };
             if (property.PropertyType == typeof(bool))
@@ -42,7 +42,7 @@ internal static class OptionEditor
                 text.TextChanged += (_, _) => changed?.Invoke(); editor = text;
             }
             editor.Margin = new Thickness(0, 2, 0, 0);
-            if (property.PropertyType != typeof(bool)) cell.Children.Add(new TextBlock { Text = field.Label, FontSize = 11, Foreground = System.Windows.Media.Brushes.LightSteelBlue, TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
+            if (property.PropertyType != typeof(bool)) cell.Children.Add(new TextBlock { Text = field.Label, FontSize = 12, Foreground = (System.Windows.Media.Brush)Application.Current.FindResource("SecondaryBrush"), TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis });
             cell.Children.Add(editor);
             AutomationProperties.SetAutomationId(editor, property.Name); AutomationProperties.SetName(editor, field.Label);
             editors.GetOrCreateValue(options)[property.Name] = editor;
