@@ -7,7 +7,7 @@ namespace GrabForge.Desktop;
 
 public sealed class MainViewModel : Observable, IAsyncDisposable
 {
-    public PortableStore Store { get; } = new(AppContext.BaseDirectory);
+    public PortableStore Store { get; } = new(PortableLayout.FindRoot(AppContext.BaseDirectory));
     public ToolManager Tools { get; }
     public DownloadQueue Queue { get; }
     public AppUpdates Updates { get; }

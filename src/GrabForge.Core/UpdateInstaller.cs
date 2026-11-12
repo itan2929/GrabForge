@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace GrabForge.Core;
 
-public sealed record ReleaseManifest(string Product, string Version, string Runtime);
+public sealed record ReleaseManifest(string Product, string Version, string Runtime, int Layout = 1);
 
 /// <summary>Applies a verified portable package while preserving data and tools.</summary>
 public static class UpdateInstaller
@@ -17,8 +17,10 @@ public static class UpdateInstaller
         var root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(request.Root));
         var rootPrefix = Path.EndsInDirectorySeparator(root) ? root : root + Path.DirectorySeparatorChar;
         if (!Directory.Exists(root) || (File.GetAttributes(root) & FileAttributes.ReparsePoint) != 0) throw new IOException("更新先フォルダを確認できません。");
-        var stage = Path.Combine(root, ".update-stage-" + Guid.NewGuid().ToString("N"));
-        var backup = Path.Combine(root, ".update-backup-" + Guid.NewGuid().ToString("N"));
+        var stage = Path.Combine(root, "data", "updates", "stage-" + Guid.NewGuid().ToString("N"));
+        var backup = Path.Combine(root, "data", "backups", "update-" + Guid.NewGuid().ToString("N"));
+        PortableLayout.RejectLinks(root, Path.Combine(root, "data", "updates"));
+        PortableLayout.RejectLinks(root, Path.Combine(root, "data", "backups"));
         Directory.CreateDirectory(stage);
         try
         {
@@ -38,8 +40,15 @@ public static class UpdateInstaller
                     else { Directory.CreateDirectory(Path.GetDirectoryName(target)!); entry.ExtractToFile(target); }
                 }
             if (!File.Exists(Path.Combine(stage, "GrabForge.exe"))) throw new IOException("更新ZIPにGrabForge.exeがありません。");
-            var manifest = JsonSerializer.Deserialize<ReleaseManifest>(await File.ReadAllTextAsync(Path.Combine(stage, "release.json")), Json.Options);
+            var manifest = JsonSerializer.Deserialize<ReleaseManifest>(await File.ReadAllTextAsync(PortableLayout.Manifest(stage)), Json.Options);
             if (manifest is null || manifest.Product != "GrabForge" || manifest.Runtime != "win-x64" || manifest.Version != request.ExpectedVersion) throw new InvalidDataException("更新ZIPの製品・バージョンが一致しません。");
+            var compatibility = Path.Combine(stage, "release.json");
+            if (File.Exists(compatibility) && PortableLayout.Manifest(stage) != compatibility &&
+                JsonSerializer.Deserialize<ReleaseManifest>(await File.ReadAllTextAsync(compatibility), Json.Options) != manifest)
+                throw new InvalidDataException("更新ZIPの互換情報が一致しません。");
+            if (manifest.Layout is not (1 or 2) || manifest.Layout == 2 &&
+                (!File.Exists(Path.Combine(stage, "app", "GrabForge.dll")) || !File.Exists(Path.Combine(stage, "app", "updater", "GrabForge.Updater.exe"))))
+                throw new InvalidDataException("更新ZIPの内部ファイルが不足しています。");
             var files = Directory.GetFiles(stage, "*", SearchOption.AllDirectories);
             // Reject existing junctions before making any changes, including parent components.
             foreach (var file in files)

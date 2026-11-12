@@ -2,6 +2,15 @@
 
 Product name: **GrabForge**. The old web application is a read-only specification reference, not a runtime dependency.
 
+## v0.3.2 portable layout and relocated workspace
+
+- The active checkout is now under the requested `Documents/_codex/ytdlp-ffmpeg-gui` directory, with Git history and SDK retained. Old QA/build output was left in the marked pre-move backup rather than copied into the active workspace. Packages, publish snapshots, QA, logs and local profile have separate directories.
+- The SDK apphost launches `app/GrabForge.dll` using the bundled runtime. Fresh native launch loaded both `hostfxr.dll` and `coreclr.dll` from `app/`; startup left only `GrabForge.exe` as a root file, with settings outside the runtime folder.
+- The exact published v0.3.1 helper installed the new package and restarted the native v0.3.2 GUI. Settings, presets and history retained their SHA-256 hashes; a legacy tool sentinel remained intact. Old runtime files and the old root backup moved beneath `data/backups/`.
+- The new helper was then launched from `app/updater/` and completed a second actual replacement/restart, writing its backup inside `data/backups/`.
+- All 42 unit tests passed, including known-file-only migration, preservation of matching user filenames on fresh installs, interruption/rollback/resumption and old/new manifest compatibility. Native workflow checks passed analysis, filename preview, both effect settings, preset round-trip, minimum window bounds, download and audio processing.
+- The packaged EXE also passed two headless boots from a different working directory with invalid global .NET paths, including a Japanese extraction path. Root/data/tool/updater paths, private runtime location, root tidying and restart preservation were checked from the running application.
+
 ## v0.3.1 layout refinements
 
 - The actual YouTube format list exposed unnecessary horizontal scrolling. Container names and file sizes now remain readable at the normal size; the format tables also fit the 1040 × 640 window, with codec details ellipsized when necessary.

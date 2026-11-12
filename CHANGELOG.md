@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.2 — 2026-11-13
+
+- Put runtime libraries, updater, help and licenses inside `app/`, keeping `GrabForge.exe` as the only root file after startup.
+- Keep settings/presets/history portable; place new tool installations under `data/tools/` while retaining existing `tools/` installations.
+- Preserve old updater compatibility and back up obsolete flat-layout files under `data/backups/` without touching unrelated files.
+- Add an offline help entry and automated native package boot checks without a global .NET installation.
+- Separate development outputs, QA data, logs and the local profile into documented folders.
+
 ## 0.3.1 — 2026-11-10
 
 - Fix clipped right corners on mode and settings tabs by using a header layout that respects tab margins.

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -155,7 +156,13 @@ public partial class MainWindow
                 var request = await vm.Updates.PrepareAsync(availableRelease, vm.Report, ct);
                 await vm.SaveSettingsAsync(); vm.Updates.LaunchUpdater(request); restarting = true; Close();
             }, "ApplyAppUpdate")));
-        app.Children.Add(Button("リリースノート", () => Process.Start(new ProcessStartInfo(availableRelease?.PageUrl ?? $"https://github.com/{vm.Settings.ReleaseRepository}/releases") { UseShellExecute = true }), "ReleaseNotes"));
+        app.Children.Add(Row(Button("リリースノート", () => Process.Start(new ProcessStartInfo(availableRelease?.PageUrl ?? $"https://github.com/{vm.Settings.ReleaseRepository}/releases") { UseShellExecute = true }), "ReleaseNotes"),
+        Button("ヘルプ・ライセンス", () =>
+        {
+            var help = Path.Combine(vm.Store.Root, "app", "docs", "index.html");
+            if (!File.Exists(help)) help = Path.Combine(vm.Store.Root, "README.md");
+            Process.Start(new ProcessStartInfo(help) { UseShellExecute = true });
+        }, "OpenHelp")));
         app.Children.Add(Text("同時ダウンロード数", 12));
         var concurrency = new TextBox { Text = vm.Settings.ConcurrentDownloads.ToString(), MaxWidth = 100, HorizontalAlignment = HorizontalAlignment.Left };
         AutomationProperties.SetAutomationId(concurrency, "Concurrency"); app.Children.Add(concurrency);

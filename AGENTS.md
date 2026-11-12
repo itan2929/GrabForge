@@ -9,3 +9,5 @@
 - Product version comes from Directory.Build.props. Do not publish until the documented acceptance gates pass.
 - Keep primary pages within the window. Lists and logs may scroll; use sections/tabs for settings, not a long page.
 - Keep visible copy to labels, actions and short state messages. Put extended guidance in tooltips or documentation.
+- Keep distribution archives/checksums in `artifacts/packages/`, package snapshots in `artifacts/publish/`, QA in `artifacts/qa/`, logs in `artifacts/logs/`, and the local portable profile in `.local/GrabForge/`. These generated/private areas stay untracked.
+- The portable root EXE loads `app/GrabForge.dll` through the SDK apphost. Resolve the user-data root with `PortableLayout`; never place settings inside `app/`. Preserve legacy update compatibility and verify the actual packaged EXE before release.

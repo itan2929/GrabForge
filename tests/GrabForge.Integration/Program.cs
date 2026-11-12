@@ -13,7 +13,7 @@ if (args[0] == "install")
     foreach (var tool in ToolManager.Definitions) await manager.InstallAsync(tool, Console.WriteLine);
     Console.WriteLine("PASS: managed tools downloaded, SHA-256 verified and version probes succeeded."); return 0;
 }
-manager.Paths.Ensure("yt-dlp", "ffmpeg", "ffprobe", "deno");
+if (args[0] != "update") manager.Paths.Ensure("yt-dlp", "ffmpeg", "ffprobe", "deno");
 if (args[0] == "serve") { await DemoServer.RunAsync(store, manager); return 0; }
 if (args[0] == "analyze")
 {

@@ -33,7 +33,7 @@ public sealed class AppUpdates(PortableStore store, HttpClient http)
     }
     public string LaunchUpdater(string requestPath)
     {
-        var source = Path.Combine(store.Root, "updater");
+        var source = PortableLayout.Updater(store.Root);
         if (!Directory.Exists(source)) throw new IOException("更新ヘルパーがありません。ZIP全体を展開し直してください。");
         var helper = Path.Combine(Path.GetTempPath(), "GrabForge-updater-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(helper);
         foreach (var file in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories))

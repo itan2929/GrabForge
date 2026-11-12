@@ -6,7 +6,7 @@ public sealed class PortableStore
 {
     public string Root { get; }
     public string Data => Path.Combine(Root, "data");
-    public string Tools => Path.Combine(Root, "tools");
+    public string Tools => Directory.Exists(Path.Combine(Root, "tools")) ? Path.Combine(Root, "tools") : Path.Combine(Data, "tools");
     private readonly SemaphoreSlim writes = new(1);
     public PortableStore(string root) { Root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root)); Directory.CreateDirectory(Data); }
     public string Resolve(string path) => Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(Root, path));

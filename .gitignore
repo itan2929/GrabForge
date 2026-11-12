@@ -1,6 +1,7 @@
 **/bin/
 **/obj/
 .tools/
+.local/
 artifacts/
 data/
 tools/

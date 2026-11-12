@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/build/">
+    <Project Path="build/GrabForge.Packaging/GrabForge.Packaging.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/GrabForge.Core/GrabForge.Core.csproj" />
     <Project Path="src/GrabForge.Desktop/GrabForge.Desktop.csproj" />

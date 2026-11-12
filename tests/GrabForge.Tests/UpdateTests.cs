@@ -13,7 +13,7 @@ public sealed class UpdateTests : IDisposable
     {
         Directory.CreateDirectory(root); var archive = Path.Combine(root, "fixture.zip");
         using (var zip = ZipFile.Open(archive, ZipArchiveMode.Create))
-            foreach (var (path, content) in new[] { ("GrabForge.exe", "new executable"), ("release.json", JsonSerializer.Serialize(new ReleaseManifest("GrabForge", "0.2.0", "win-x64"), Json.Options)) }.Concat(extra))
+            foreach (var (path, content) in new[] { ("GrabForge.exe", "new executable"), ("release.json", JsonSerializer.Serialize(new { Product = "GrabForge", Version = "0.2.0", Runtime = "win-x64" }, Json.Options)) }.Concat(extra))
             { using var writer = new StreamWriter(zip.CreateEntry(path).Open()); writer.Write(content); }
         var install = Path.Combine(root, "application"); Directory.CreateDirectory(install);
         return new(-1, install, archive, Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(archive))), "0.2.0");
@@ -74,6 +74,28 @@ public sealed class UpdateTests : IDisposable
         var requestPath = await updates.PrepareAsync(release, _ => { });
         var request = JsonSerializer.Deserialize<UpdateRequest>(File.ReadAllText(requestPath), Json.Options)!;
         Assert.Equal(hash, request.Sha256); Assert.Equal(bytes, File.ReadAllBytes(request.Archive));
+    }
+    [Fact] public async Task NewLayoutUpdatesFromInternalManifestAndKeepsBackupsInData()
+    {
+        var request = Package(("app/GrabForge.dll", "application"), ("app/updater/GrabForge.Updater.exe", "helper"),
+            ("app/release.json", JsonSerializer.Serialize(new ReleaseManifest("GrabForge", "0.2.0", "win-x64", 2), Json.Options)));
+        // Replace the compatibility manifest to match the new package layout.
+        using (var zip = ZipFile.Open(request.Archive, ZipArchiveMode.Update))
+        {
+            zip.GetEntry("release.json")!.Delete();
+            using var writer = new StreamWriter(zip.CreateEntry("release.json").Open());
+            writer.Write(JsonSerializer.Serialize(new ReleaseManifest("GrabForge", "0.2.0", "win-x64", 2), Json.Options));
+        }
+        request = request with { Sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(request.Archive))) };
+        var backup = await UpdateInstaller.ApplyAsync(request);
+        Assert.StartsWith(Path.Combine(request.Root, "data", "backups") + Path.DirectorySeparatorChar, backup);
+        Assert.Equal("application", File.ReadAllText(Path.Combine(request.Root, "app", "GrabForge.dll")));
+    }
+    [Fact] public async Task ConflictingLayoutManifestsFailBeforeReplacingTheExecutable()
+    {
+        var request = Package(("app/release.json", JsonSerializer.Serialize(new ReleaseManifest("GrabForge", "0.2.0", "win-x64", 2), Json.Options)));
+        await Assert.ThrowsAsync<InvalidDataException>(() => UpdateInstaller.ApplyAsync(request));
+        Assert.False(File.Exists(Path.Combine(request.Root, "GrabForge.exe")));
     }
     public void Dispose() { if (Directory.Exists(root)) Directory.Delete(root, true); }
 }
